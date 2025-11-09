@@ -1,2 +1,2 @@
-- move database to home folder so it won't matter from where the app is run.
-- add alias to bashrc
+- add delete (-d [id], --delete [id]) command flag
+- add reset (--reset, --clear) command flag
