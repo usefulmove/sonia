@@ -19,7 +19,7 @@ wheels = [
 [[package]]
 name = "note"
 version = "0.2.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
 ]
