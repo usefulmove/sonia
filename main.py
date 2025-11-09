@@ -3,17 +3,21 @@ import sys
 from datetime import datetime
 import duckdb
 
+NOTE_VERSION = '0.0.1'
+
+
 def main():
     current_datetime = datetime.now()
-    notes = sys.argv[1:]
 
 
-    for note in notes:
-        print(f'  {current_datetime.strftime("%y.%m.%d %H:%M:%S")} | {note}')
+    ## version
+    if sys.argv[1] in ('--version'):
+        print(f'note {NOTE_VERSION}')
+        return
 
 
     ## connect to notes database (or create if it doesn't exist)
-    con = duckdb.connect('.notes.db')
+    con = duckdb.connect('~/.notes.db')
 
 
     ## create schema and notes table
@@ -27,6 +31,26 @@ def main():
     """)
 
 
+    ## list notes
+    if sys.argv[1] in ('-l', '-ls', '-list', '--list'):
+        # read database contents and write out to console
+        db_entries = con.execute("select date, message from notes;").fetchall()
+
+        for i, e in enumerate(db_entries):
+            print(f'  {e[0].strftime("%y.%m.%d %H:%M")} | {i + 1} | {e[1]}')
+
+        con.close()
+        return
+
+
+    notes = sys.argv[1:]
+
+
+    for note in notes:
+        print(f'  {current_datetime.strftime("%y.%m.%d %H:%M")} | {note}')
+
+
+
     ## load notes into database
     for note in notes:
         con.execute(f"""
@@ -37,13 +61,7 @@ def main():
         """)
 
 
-    ## read database contents and write out to console
-    result = con.execute("select * from notes;").pl()
-    print(result)
-
-
     con.close() # close database connection
-
 
 
 
