@@ -10,7 +10,7 @@ def main():
 
 
     ## version
-    if sys.argv[1] in ('--version'):
+    if sys.argv[1] in ('-version', '--version'):
         print(f'note {metadata.version("note")}')
         return
 
@@ -60,7 +60,7 @@ def main():
 
 
     ## clear notes
-    if sys.argv[1] in ('--clear', '--reset'):
+    if sys.argv[1] in ('-clear', '--clear', '-reset', '--reset'):
         # clear database
         con.execute(f'delete from {TABLE};')
 
@@ -69,7 +69,7 @@ def main():
 
 
     ## delete note
-    if sys.argv[1] in ('-d', '--delete'):
+    if sys.argv[1] in ('-d', '-delete', '--delete'):
         # delete database entry
         nid = sys.argv[2]
 
@@ -82,16 +82,10 @@ def main():
         return
         
 
-
+    ## add notes
     notes = sys.argv[1:]
 
-
-    for note in notes:
-        print(f'  {current_datetime.strftime("%y.%m.%d %H:%M")} | {note}')
-
-
-
-    ## load notes into database
+    # load notes into database
     for note in notes:
         con.execute(f"""
             insert into {SCHEMA}.{TABLE}
@@ -102,6 +96,10 @@ def main():
                 '{note}'
             );
         """)
+
+    # display output message
+    for note in notes:
+        print(f'  {current_datetime.strftime("%y.%m.%d %H:%M")} | {note} | ( added )')
 
 
     con.close() # close database connection
