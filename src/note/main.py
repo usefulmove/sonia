@@ -46,7 +46,7 @@ def main():
     ## list notes
     if sys.argv[1] in ('-l', '-ls', '-list', '--list'):
         # read database contents and write out to console
-        db_entries = con.execute(f"""
+        query = f"""
             select
                 {NID_COLUMN},
                 {TIMESTAMP_COLUMN},
@@ -55,7 +55,9 @@ def main():
                 {TABLE}
             order by
                 1, 2;
-        """).fetchall()
+        """
+
+        db_entries = con.execute(query).fetchall()
 
         print('')
         for e in db_entries:
@@ -76,26 +78,27 @@ def main():
 
 
     ## delete note(s)
-    if sys.argv[1] in ('-d', '-delete', '--delete'):
+    if sys.argv[1] in ('-d', '-delete', '--delete', '-rm'):
         # delete database entry
         nids = sys.argv[2:]
 
         for nid in nids:
-            con.execute(f"""
+            query = f"""
                 delete from {TABLE}
                 where {NID_COLUMN} = {nid};
-            """)
+            """
+            con.execute(query)
 
         con.close()
         return
 
 
-    ## search
-    if sys.argv[1] in ('-s', '-search', '--search', '-f', '-find', '--find', '-filter', '--filter'):
+    ## search (general)
+    if sys.argv[1] in ('-s', '-search', '--search', '-f', '-fd', '-find', '--find', '-filter', '--filter'):
         # search database and output results
         match = sys.argv[2]
 
-        search_results = con.execute(f"""
+        query = f"""
             select
                 {NID_COLUMN},
                 {TIMESTAMP_COLUMN},
@@ -106,7 +109,9 @@ def main():
                 {MESSAGE_COLUMN} ilike '%{match}%'
             order by
                 1, 2;
-        """).fetchall()
+        """
+
+        search_results = con.execute(query).fetchall()
 
         print('')
         for e in search_results:
@@ -117,12 +122,60 @@ def main():
         return
         
 
+    ## tag search
+    if sys.argv[1] in ('-t', '-tag', '--tag'):
+        # search database for tags and output results
+        tag = sys.argv[2]
+
+        query = f"""
+            select
+                {NID_COLUMN},
+                {TIMESTAMP_COLUMN},
+                {MESSAGE_COLUMN}
+            from
+                {TABLE}
+            where
+                {MESSAGE_COLUMN} ilike '%:{tag}:%'
+            order by
+                1, 2;
+        """
+
+        search_results = con.execute(query).fetchall()
+
+        print('')
+        for e in search_results:
+            print(f'  {e[1].strftime("%y.%m.%d %H:%M")} | {e[0]} | {e[2]}')
+        print('')
+
+        con.close()
+        return
+
+
+    ## update note
+    if sys.argv[1] in ('-u', '-update', '--update'):
+        nid = sys.argv[2]
+        msg = sys.argv[3]
+
+        query = f"""
+            update
+                {TABLE}
+            set
+                {MESSAGE_COLUMN} = '{msg}'
+            where
+                {NID_COLUMN} = {nid};
+        """
+
+        con.execute(query)
+        con.close()
+        return
+
+
     ## add notes
     notes = sys.argv[1:]
 
     # load notes into database
     for note in notes:
-        con.execute(f"""
+        query = f"""
             insert into {SCHEMA}.{TABLE}
                 ({NID_COLUMN}, {TIMESTAMP_COLUMN}, {MESSAGE_COLUMN})
             values (
@@ -130,12 +183,13 @@ def main():
                 cast('{current_datetime}' as timestamp),
                 '{note}'
             );
-        """)
+        """
+        con.execute(query)
 
     # display output message
     print('')
     for note in notes:
-        print(f'  {current_datetime.strftime("%y.%m.%d %H:%M")} | {note} | ( added )')
+        print(f'  {current_datetime.strftime("%H:%M")} | {note} | ( added )')
     print('')
 
 
