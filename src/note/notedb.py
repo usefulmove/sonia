@@ -10,7 +10,7 @@ TIMESTAMP_COLUMN = 'date'
 MESSAGE_COLUMN = 'message'
 
 
-def get_connection(read_only: bool = False) -> duckdb.DuckDBPyConnection:
+def get_connection() -> duckdb.DuckDBPyConnection:
     ## connect to database (or create if it doesn't exist)
     con = duckdb.connect('~/.notes.db')
 
@@ -40,7 +40,7 @@ def get_notes() -> list[tuple[int, datetime, str]]:
             1, 2;
     """
 
-    with get_connection(read_only=True) as con:
+    with get_connection() as con:
         entries = con.execute(query).fetchall()
 
     return entries
@@ -77,7 +77,7 @@ def get_note_matches(match: str) -> list[tuple[int, datetime, str]]:
             1, 2;
     """
 
-    with get_connection(read_only=True) as con:
+    with get_connection() as con:
         matches = con.execute(query).fetchall()
 
     return matches
@@ -97,7 +97,7 @@ def get_tag_matches(tag: str) -> list[tuple[int, datetime, str]]:
             1, 2;
     """
 
-    with get_connection(read_only=True) as con:
+    with get_connection() as con:
         matches = con.execute(query).fetchall()
 
     return matches
