@@ -54,7 +54,7 @@ def main():
 
 
     ## delete note(s)
-    if sys.argv[1] in ('-d', '-delete', '--delete', '-rm'):
+    if sys.argv[1] in ('-d', '-delete', '--delete', '-rm', '-complete'):
         # delete selected database entries
         note_ids = sys.argv[2:]
         db.delete_entries(note_ids)
@@ -118,7 +118,7 @@ def main():
 
     ## check for unknown option
     if sys.argv[1].startswith('-'):
-        console.print(f'  note: unknown option ([{cemph}]{sys.argv[1]})[/]')
+        console.print(f'  note: unknown option ([{cdim}]{sys.argv[1]}[/])')
         return
 
 
