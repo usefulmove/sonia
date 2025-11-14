@@ -48,7 +48,7 @@ def main():
 
 
     ## list notes ##
-    list_flags = ('-l', '-ls', '-list', '--list')
+    list_flags = ('-l', '-ls', 'ls', '-list', '--list', 'list')
 
     if sys.argv[1] in list_flags:
         # read database contents and write out to console
@@ -80,11 +80,11 @@ def main():
 
     ## delete note(s) ##
     delete_flags = (
-        '-d', '-delete', '--delete',
-        '-rm', '-remove', '--remove',
-        '-complete', '--complete',
-        '-done', '--done',
-        '-drop', '--drop',
+        '-d', '-delete', '--delete', 'delete',
+        '-rm', 'rm', '-remove', '--remove', 'remove',
+        '-complete', '--complete', 'complete',
+        '-done', '--done', 'done',
+        '-drop', '--drop', 'drop',
     )
 
     if sys.argv[1] in delete_flags:
@@ -109,9 +109,9 @@ def main():
 
     ## search (general) ##
     message_search_flags = (
-        '-s', '-search', '--search',
-        '-f', '-fd', '-find', '--find',
-        '-filter', '--filter',
+        '-s', '-search', '--search', 'search',
+        '-f', '-fd', '-find', '--find', 'find',
+        '-filter', '--filter', 'filter',
     )
 
     if sys.argv[1] in message_search_flags:
@@ -133,7 +133,7 @@ def main():
         
 
     ## tag search ##
-    tag_search_flags = ('-t', '-tag', '--tag')
+    tag_search_flags = ('-t', '-tag', '--tag', 'tag')
 
     if sys.argv[1] in tag_search_flags:
         # search database for tags and output results
@@ -155,8 +155,8 @@ def main():
 
     ## update note ##
     update_flags = (
-        '-u', '-update', '--update',
-        '-e', '-edit', '--edit',
+        '-u', '-update', '--update', 'update',
+        '-e', '-edit', '--edit', 'edit',
     )
 
     if sys.argv[1] in update_flags:
@@ -178,7 +178,7 @@ def main():
 
 
     ## append note ##
-    append_flags = ('-append', '--append')
+    append_flags = ('-append', '--append', 'append')
 
     if sys.argv[1] in append_flags:
         note_id = sys.argv[2]
@@ -203,7 +203,7 @@ def main():
 
 
     ## rebase notes ##
-    rebase_flags = ('-rebase', '--rebase')
+    rebase_flags = ('-rebase', '--rebase', 'rebase')
 
     if sys.argv[1] in rebase_flags:
         # update database nids
