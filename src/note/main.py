@@ -230,7 +230,6 @@ def main():
     disp_notes = sorted(
         db_notes,
         key=lambda tup: tup[0],
-        reverse=True
     )[:len(add_notes)]
 
     # display confirmation message
