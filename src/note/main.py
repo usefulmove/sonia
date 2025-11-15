@@ -223,6 +223,7 @@ def main():
 
     db.add_entries(add_notes)
 
+    # display confirmation message
     db_notes = []
     for note in add_notes:
         db_notes += db.get_note_matches(note)
@@ -230,10 +231,10 @@ def main():
     disp_notes = sorted(
         db_notes,
         key=lambda tup: tup[0],
-    )[:len(add_notes)]
+        reverse=True, # current addition(s) at top
+    )[:len(add_notes)] # grab same number as added
 
-    # display confirmation message
-    for nid, dt, msg in disp_notes:
+    for nid, dt, msg in reversed(disp_notes):
         console.print(
             f'  [{cnorm}]{color_tags(msg)}[/]' +
             f' [{csep}]|[/] ' +
