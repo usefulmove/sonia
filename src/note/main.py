@@ -3,36 +3,18 @@ import sys
 import re
 from importlib import metadata
 from . import notedb as db
-from rich.console import Console
+from . import console_output as cons
 
 
 def main():
-    ## rich console settings ##
-    console = Console()
-    # colors
-    cdim = '#616161'
-    csep = '#454545'
-    cemph = '#faf6e4'
-    cnorm = 'default'
-    
-    def color_tags(s: str) -> str:
-        return re.sub(r":([a-z]*):", f"[{cdim}]:\\1:[/{cdim}]", s)
-
-
     ## no args - list notes ##
     if len(sys.argv) == 1:
         # read database contents and write out to console
         # ( ignore :later: tagged notes )
         current_notes = db.get_tag_unmatches('later')
 
-        for nid, dt, msg in current_notes:
-            console.print(
-                f'  [{cdim}]{dt.strftime("%y.%m.%d %H:%M")}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}]{color_tags(msg)}[/]'
-            )
+        for note in current_notes:
+            cons.send_note(note)
 
         return
 
@@ -41,27 +23,22 @@ def main():
     version_flags = ('-version', '--version')
 
     if sys.argv[1] in version_flags:
-        console.print(
-            f'  [{cnorm}]note[/] [{cemph}]{metadata.version("note")}[/]'
-        )
+        cons.send_version(metadata.version("note"))
         return
 
 
     ## list notes ##
-    list_flags = ('-l', 'l', '-ls', 'ls', '-list', '--list', 'list')
+    list_flags = (
+        '-l', 'l', '-ls', 'ls',
+        '-list', '--list', 'list',
+    )
 
     if sys.argv[1] in list_flags:
         # read database contents and write out to console
         notes = db.get_notes()
 
-        for nid, dt, msg in notes:
-            console.print(
-                f'  [{cdim}]{dt.strftime("%y.%m.%d %H:%M")}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}]{color_tags(msg)}[/]'
-            )
+        for note in notes:
+            cons.send_note(note)
 
         return
 
@@ -95,14 +72,8 @@ def main():
 
         db.delete_entries(note_ids)
 
-        for nid, dt, msg in notes:
-            console.print(
-                f'  [{cnorm}]{color_tags(msg)}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}](done)[/]'
-            )
+        for note in notes:
+            cons.send_confirmation(note, "done")
 
         return
 
@@ -120,14 +91,8 @@ def main():
 
         search_matches = db.get_note_matches(match)
 
-        for nid, dt, msg in search_matches:
-            console.print(
-                f'  [{cdim}]{dt.strftime("%y.%m.%d %H:%M")}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}]{color_tags(msg)}[/]'
-            )
+        for note in search_matches:
+            cons.send_note(note)
 
         return
         
@@ -141,14 +106,8 @@ def main():
 
         search_matches = db.get_tag_matches(tag)
 
-        for nid, dt, msg in search_matches:
-            console.print(
-                f'  [{cdim}]{dt.strftime("%y.%m.%d %H:%M")}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}]{color_tags(msg)}[/]'
-            )
+        for note in search_matches:
+            cons.send_note(note)
 
         return
 
@@ -165,14 +124,9 @@ def main():
 
         db.update_entry(note_id, message)
 
-        nid, dt, msg = db.get_notes(note_id)[0]
-        console.print(
-            f'  [{cnorm}]{color_tags(msg)}[/]' +
-            f' [{csep}]|[/] ' +
-            f'[{cdim}]{nid}[/]' +
-            f' [{csep}]|[/] ' +
-            f'[{cnorm}](updated)[/]'
-        )
+        # read note back from database and send confirmation
+        note = db.get_notes(note_id)[0]
+        cons.send_confirmation(note, "updated")
 
         return
 
@@ -187,17 +141,12 @@ def main():
         # retrieve note
         nid, dt, msg = db.get_notes(note_id)[0]
 
-        # update notw with appended message
+        # update note with appended message
         db.update_entry(note_id, msg + ' ' + s)
 
-        anid, adt, amsg = db.get_notes(note_id)[0]
-        console.print(
-            f'  [{cnorm}]{color_tags(amsg)}[/]' +
-            f' [{csep}]|[/] ' +
-            f'[{cdim}]{anid}[/]' +
-            f' [{csep}]|[/] ' +
-            f'[{cnorm}](appended)[/]'
-        )
+        # read note back from database and send confirmation
+        note = db.get_notes(note_id)[0]
+        cons.send_confirmation(note, "appended")
 
         return
 
@@ -223,7 +172,8 @@ def main():
 
         db.add_entries(add_notes)
 
-        # display confirmation message
+        # read notes back from database and send confirmation
+
         db_notes = []
         for note in add_notes:
             db_notes += db.get_note_matches(note)
@@ -234,20 +184,14 @@ def main():
             reverse=True, # current addition(s) at top
         )[:len(add_notes)] # grab same number as added
 
-        for nid, dt, msg in reversed(disp_notes):
-            console.print(
-                f'  [{cnorm}]{color_tags(msg)}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cdim}]{nid}[/]' +
-                f' [{csep}]|[/] ' +
-                f'[{cnorm}](added)[/]'
-            )
+        for note in reversed(disp_notes):
+            cons.send_confirmation(note, "added")
 
         return
 
 
     ## check for unknown option ##
-    console.print(f'  note: unknown option ([{cdim}]{sys.argv[1]}[/])')
+    cons.send_option_unknown(sys.argv[1])
 
 
 

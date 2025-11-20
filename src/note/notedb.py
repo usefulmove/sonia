@@ -3,7 +3,13 @@ import duckdb
 import re
 
 
-## database schema
+## notes database ##
+DB_FILENAME = '.notes.db'
+DB_PATH = '~/'
+
+
+## database schema ##
+
 SCHEMA = 'coredb'
 TABLE = 'notes'
 NID_COLUMN = 'nid'
@@ -11,9 +17,11 @@ TIMESTAMP_COLUMN = 'date'
 MESSAGE_COLUMN = 'message'
 
 
+## module methods ##
+
 def get_connection() -> duckdb.DuckDBPyConnection:
     # connect to database (or create if it doesn't exist)
-    con = duckdb.connect('~/.notes.db')
+    con = duckdb.connect(DB_PATH + DB_FILENAME)
 
     # create schema and notes table
     con.execute(f'create schema if not exists {SCHEMA};')
