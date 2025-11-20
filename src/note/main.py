@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-import re
 from importlib import metadata
 from . import notedb as db
 from . import console_output as cons
@@ -139,7 +138,7 @@ def main():
         s = sys.argv[3]
 
         # retrieve note
-        nid, dt, msg = db.get_notes(note_id)[0]
+        _, _, msg = db.get_notes(note_id)[0]
 
         # update note with appended message
         db.update_entry(note_id, msg + ' ' + s)
@@ -155,7 +154,7 @@ def main():
     rebase_flags = ('-rebase', '--rebase', 'rebase')
 
     if sys.argv[1] in rebase_flags:
-        # update database nids
+        # update database note ids
         db.rebase()
         return
 
