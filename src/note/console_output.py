@@ -17,7 +17,7 @@ CERR = '#f15f49'
 
 
 def color_tags(s: str) -> str:
-    return re.sub(r":([a-z]*):", f"[{CDIM}]:\\1:[/{CDIM}]", s)
+    return re.sub(r":([a-zA-Z0-9]*):", f"[{CDIM}]:\\1:[/{CDIM}]", s)
 
 
 def send_version(version: str) -> None:
