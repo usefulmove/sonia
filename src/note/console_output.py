@@ -44,9 +44,9 @@ def send_confirmation(note: db.Note, action: str) -> None:
     )
 
 
-def send_option_unknown(arg: str) -> None:
-    console.print(f'  [{CERR}]error[/]: unknown option ([{CDIM}]{arg}[/])')
+def send_error(error_message: str, arg: str = '') -> None:
+    if arg == '':
+        console.print(f'  [{CERR}]error[/]: {error_message}')
+    else:
+        console.print(f'  [{CERR}]error[/]: {error_message} ([{CDIM}]{arg}[/])')
 
-
-def send_error(error_message: str) -> None:
-    console.print(f'  [{CERR}]error[/]: {error_message}')

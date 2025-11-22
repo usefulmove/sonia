@@ -2,7 +2,6 @@ from datetime import datetime
 import duckdb
 import re
 from typing import NamedTuple
-from . import console_output as cons
 
 
 PRODUCTION = True
@@ -32,7 +31,7 @@ TIMESTAMP_COLUMN = 'date'
 MESSAGE_COLUMN = 'message'
 
 
-## module methods ##
+## module functions ##
 
 def get_connection() -> duckdb.DuckDBPyConnection:
     # connect to database (or create if it doesn't exist)
@@ -52,8 +51,8 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     return con
 
 
-def get_notes(nids: list[str] = []) -> list[Note]:
-    if not nids:
+def get_notes(ids: list[int] = []) -> list[Note]:
+    if not ids:
         # retrieve all notes
         query = f"""
             select
@@ -66,13 +65,7 @@ def get_notes(nids: list[str] = []) -> list[Note]:
                 1, 2;
         """
     else:
-        query_insert: str = ', '.join('?' for _ in nids)
-
-        try:
-            ids: list[int] = list(map(int, nids))
-        except ValueError:
-            cons.send_error('improper input. could not convert note identifier.')
-            return []
+        query_insert: str = ', '.join('?' for _ in ids)
 
         # retrieve selected nids
         query = f"""
@@ -89,7 +82,7 @@ def get_notes(nids: list[str] = []) -> list[Note]:
         """
 
     with get_connection() as con:
-        if not nids:
+        if not ids:
             entries = con.execute(query).fetchall()
         else:
             entries = con.execute(query, ids).fetchall()
@@ -100,15 +93,35 @@ def get_notes(nids: list[str] = []) -> list[Note]:
     return notes
 
 
-def delete_entries(nids: list[str]) -> None:
+def get_nids() -> list[int]:
+    # retrieve all nids
+    query = f"""
+        select
+            {NID_COLUMN}
+        from
+            {TABLE}
+        order by
+            1;
+    """
+
+    with get_connection() as con:
+        entries = con.execute(query).fetchall()
+
+    # covert
+    ids: list[int] = [int(tup[0]) for tup in entries]
+
+    return ids
+
+
+def delete_notes(ids: list[int]) -> None:
     # delete selected database entries
     with get_connection() as con:
-        for nid in nids:
+        for id in ids:
             query = f"""
                 delete from {TABLE}
                 where {NID_COLUMN} = ?;
             """
-            con.execute(query, [int(nid)])
+            con.execute(query, [id])
 
 
 def clear_database() -> None:
@@ -209,7 +222,7 @@ def get_tag_unmatches(tag: str) -> list[Note]:
     return notes
 
 
-def update_entry(nid: str, message: str) -> None:
+def update_note(id: int, message: str) -> None:
     query = f"""
         update
             {TABLE}
@@ -220,7 +233,7 @@ def update_entry(nid: str, message: str) -> None:
     """
 
     with get_connection() as con:
-        con.execute(query, [message, int(nid)])
+        con.execute(query, [message, id])
 
 
 def rebase() -> None:
@@ -257,9 +270,13 @@ def add_entries(entries: list[str]) -> None:
                 insert into {SCHEMA}.{TABLE}
                     ({NID_COLUMN}, {TIMESTAMP_COLUMN}, {MESSAGE_COLUMN})
                 values (
-                    (select max({NID_COLUMN}) from {TABLE}) + 1,
+                    (select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}),
                     cast('{datetime.now()}' as timestamp),
                     ?
                 );
             """
             con.execute(query, [message])
+
+
+def is_valid(id: int) -> bool:
+    return id in get_nids()

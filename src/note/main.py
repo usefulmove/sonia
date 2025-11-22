@@ -5,7 +5,7 @@ from . import console_output as cons
 from . import notedb as db
 
 
-def main():
+def main() -> None:
     if not db.PRODUCTION:
         print('  [warning: note running in TEST mode]')
 
@@ -27,6 +27,7 @@ def main():
 
     if sys.argv[1] in version_flags:
         cons.send_version(metadata.version("note"))
+
         return
 
 
@@ -69,9 +70,23 @@ def main():
         # delete selected database entries
         note_ids: list[str] = sys.argv[2:]
 
-        conf_notes: list[db.Note] = db.get_notes(note_ids)
+        # valid note id?
+        try:
+            ids = [int(nid.strip()) for nid in note_ids]
+        except ValueError:
+            cons.send_error('invalid input')
+            return
 
-        db.delete_entries(note_ids)
+        for id in ids:
+            if not db.is_valid(id):
+                cons.send_error('not a valid note', str(id))
+                return
+
+        # retrieve notes (for confirmation)
+        conf_notes: list[db.Note] = db.get_notes(ids)
+
+        # delete notes
+        db.delete_notes(ids)
 
         for note in conf_notes:
             cons.send_confirmation(note, "done")
@@ -119,10 +134,22 @@ def main():
         upd_note_id: str = sys.argv[2]
         message: str = sys.argv[3]
 
-        db.update_entry(upd_note_id, message)
+        # valid note id?
+        try:
+            id = int(upd_note_id.strip())
+        except ValueError:
+            cons.send_error('invalid input', upd_note_id)
+            return
+
+        if not db.is_valid(id):
+            cons.send_error('not a valid note', str(id))
+            return
+
+        # update note
+        db.update_note(id, message)
 
         # read note back from database and send confirmation
-        cons.send_confirmation(db.get_notes([upd_note_id])[0], "updated")
+        cons.send_confirmation(db.get_notes([id])[0], "updated")
 
         return
 
@@ -134,14 +161,25 @@ def main():
         app_note_id: str = sys.argv[2]
         s: str = sys.argv[3]
 
+        # valid note id?
+        try:
+            id = int(app_note_id.strip())
+        except ValueError:
+            cons.send_error('invalid input', app_note_id)
+            return
+
+        if not db.is_valid(id):
+            cons.send_error('not a valid note', str(id))
+            return
+
         # retrieve note
-        original_note: db.Note = db.get_notes([app_note_id])[0]
+        original_note: db.Note = db.get_notes([id])[0]
 
         # update note with appended message
-        db.update_entry(app_note_id, original_note.message + ' ' + s)
+        db.update_note(id, original_note.message + ' ' + s)
 
         # read note back from database and send confirmation
-        cons.send_confirmation(db.get_notes([app_note_id])[0], "appended")
+        cons.send_confirmation(db.get_notes([id])[0], "appended")
 
         return
 
@@ -186,7 +224,7 @@ def main():
 
 
     ## check for unknown option ##
-    cons.send_option_unknown(sys.argv[1])
+    cons.send_error('unknown option', sys.argv[1])
 
 
 
