@@ -113,27 +113,6 @@ def get_notes(ids: list[int] = []) -> list[Note]:
     return notes
 
 
-def get_nids() -> list[int]:
-    '''Return all note identifiers.'''
-
-    query = f"""
-        select
-            {NID_COLUMN}
-        from
-            {TABLE}
-        order by
-            1;
-    """
-
-    with get_connection() as con:
-        rows = con.execute(query).fetchall()
-
-    # covert
-    ids: list[int] = [int(row[0]) for row in rows]
-
-    return ids
-
-
 def delete_notes(ids: list[int]) -> None:
     '''Delete identified notes.'''
 
@@ -318,4 +297,16 @@ def rebase() -> None:
 def is_valid(id: int) -> bool:
     '''Return whether argument is a valid note identifier.'''
 
-    return id in get_nids()
+    query = f"""
+        select
+            count(*)
+        from
+            {TABLE}
+        where
+            {NID_COLUMN} = ?;
+    """
+
+    with get_connection() as con:
+        count: int = con.execute(query, [id]).fetchall()[0][0]
+
+    return count > 0
