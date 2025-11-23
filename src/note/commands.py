@@ -13,8 +13,8 @@ __all__ = [
 
 class Command:
     def __init__(self, ids, check_func, execute_func) -> None:
-        self.ids: list[str] = ids
-        self.check: Callable[[None], None] = check_func
+        self.ids: tuple[str, ...] = ids
+        self.check: Callable[[None], bool] = check_func
         self.execute: Callable[[None], None] = execute_func
 
     def run(self):
