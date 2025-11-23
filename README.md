@@ -52,12 +52,6 @@ If you want to contribute or modify the source code, this project uses `uv` for 
 
 Once installed, use the `note` command.
 
-**Initialize (Optional)**
-The database (`.notes.db`) is created automatically on your first add, but you can force it:
-
-```bash
-note init
-```
 
 **Add Notes**
 Add one note or multiple notes at once.
