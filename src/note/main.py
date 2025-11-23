@@ -7,7 +7,7 @@ from . import notedb as db
 
 def main() -> None:
     if not db.PRODUCTION:
-        print('  [warning: running in TEST mode]')
+        cons.send_warning('running in TEST mode')
 
 
     ## no args - list notes ##

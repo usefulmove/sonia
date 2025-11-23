@@ -7,6 +7,7 @@ __all__ = [
     'send_note',
     'send_confirmation',
     'send_error',
+    'send_warning',
 ]
 
 
@@ -20,6 +21,7 @@ CSEP = '#454545'
 CEMPH = '#faf6e4'
 CNORM = 'default'
 CERR = '#ff0000'
+CWARN = '#fff670'
 
 
 def send_version(version: str) -> None:
@@ -59,6 +61,15 @@ def send_error(error_message: str, arg: str = '') -> None:
         console.print(f'  [{CERR}]error[/]: {error_message}')
     else:
         console.print(f'  [{CERR}]error[/]: {error_message} ([{CDIM}]{arg}[/])')
+
+
+def send_warning(warning_message: str, arg: str = '') -> None:
+    '''Output formatted warning message.'''
+
+    if arg == '':
+        console.print(f'  [{CWARN}]warning[/]: {warning_message}')
+    else:
+        console.print(f'  [{CWARN}]warning[/]: {warning_message} ([{CDIM}]{arg}[/])')
 
 
 def color_tags(s: str) -> str:
