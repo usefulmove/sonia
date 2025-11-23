@@ -10,8 +10,8 @@ def main() -> None:
         cons.send_warning('running in TEST mode')
 
 
-    ## no args - run short list cmd ##
-    if len(sys.argv) == 1:
+    ## no args - run short list command ##
+    if len(sys.argv) < 2:
         cmd.commands['shortls'].run()
         return
 
@@ -23,9 +23,8 @@ def main() -> None:
         cmd.commands[cmd_id].run()
         return
 
-
     ## unknown command ##
-    cons.send_error('unknown command', sys.argv[1])
+    cons.send_error('unknown command', cmd_id)
 
 
 if __name__ == "__main__":

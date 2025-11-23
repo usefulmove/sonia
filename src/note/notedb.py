@@ -307,6 +307,6 @@ def is_valid(id: int) -> bool:
     """
 
     with get_connection() as con:
-        count, *_ = con.execute(query, [id]).fetchall()[0]
+        count, *_ = con.execute(query, [id]).fetchone()
 
     return count > 0

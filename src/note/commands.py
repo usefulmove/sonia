@@ -175,7 +175,8 @@ def update_cmd_execute() -> None:
     db.update_note(id, message)
 
     # read note back from database and send confirmation
-    cons.send_confirmation(db.get_notes([id])[0], "updated")
+    confirmation_note, *_ = db.get_notes([id])
+    cons.send_confirmation(confirmation_note, "updated")
 
 update_cmd = Command(
     (
@@ -216,13 +217,14 @@ def append_cmd_execute() -> None:
     id: int = int(app_note_id.strip())
 
     # retrieve note
-    original_note: db.Note = db.get_notes([id])[0]
+    original_note, *_ = db.get_notes([id])
 
     # update note with appended message
     db.update_note(id, original_note.message + ' ' + s)
 
     # read note back from database and send confirmation
-    cons.send_confirmation(db.get_notes([id])[0], "appended")
+    confirmation_note, *_ = db.get_notes([id])
+    cons.send_confirmation(confirmation_note, "appended")
 
 append_cmd = Command(
     ('-append', '--append', 'append'),
