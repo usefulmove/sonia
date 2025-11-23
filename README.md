@@ -14,16 +14,16 @@
 
 ## Installation
 
-### Option 1: For Users (Recommended)
-To install the tool globally so you can run `note` from anywhere:
+### Option 1: From a clone (recommended)
+Install from a local checkout so you can run `note` from anywhere:
 
 ```bash
-# Using pipx (Recommended for CLI tools to avoid dependency conflicts)
-pipx install git+[https://github.com/usefulmove/note.git](https://github.com/usefulmove/note.git)
-
-# OR using pip
-pip install git+[https://github.com/usefulmove/note.git](https://github.com/usefulmove/note.git)
-````
+pipx install .
+# OR
+pip install .
+# OR
+uv tool install .
+```
 
 ### Option 2: For Developers
 
