@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-PRODUCTION = True
+PRODUCTION = False
 
 
 class Note(NamedTuple):
