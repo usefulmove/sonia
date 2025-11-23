@@ -12,7 +12,7 @@ def main() -> None:
 
     ## no args - run short list cmd ##
     if len(sys.argv) == 1:
-        cmd.commands['_'].run()
+        cmd.commands['shortls'].run()
         return
 
 

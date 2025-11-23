@@ -89,7 +89,7 @@ def short_list_cmd_execute() -> None:
         cons.send_note(note)
 
 short_list_cmd = Command(
-    ('_'),
+    ('_', 'shortls'),
     lambda : True,
     short_list_cmd_execute
 )
