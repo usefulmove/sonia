@@ -1,6 +1,6 @@
-from . import notedb as db
-from rich.console import Console
 import re
+from rich.console import Console
+from note import notedb as db
 
 __all__ = [
     'send_version',

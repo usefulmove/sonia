@@ -1,8 +1,8 @@
 import sys
 from importlib import metadata
-from . import notedb as db
-from . import console_output as cons
 from collections.abc import Callable
+from note import notedb as db
+from note import console_output as cons
 
 
 __all__ = [

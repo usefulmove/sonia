@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sys
-from . import console_output as cons
-from . import notedb as db
-from . import commands as cmd
+from note import console_output as cons
+from note import notedb as db
+from note import commands as cmd
 
 
 def main() -> None:
