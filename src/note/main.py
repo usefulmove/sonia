@@ -9,17 +9,20 @@ def main() -> None:
     if not db.PRODUCTION:
         cons.send_warning('running in TEST mode')
 
-    ## no args - list notes ##
+
+    ## no args - run short list cmd ##
     if len(sys.argv) == 1:
         cmd.commands['_'].run()
         return
 
-    ## run command ##
+
+    ## command execution ##
     cmd_id: str = sys.argv[1]
 
     if cmd_id in cmd.commands:
         cmd.commands[cmd_id].run()
         return
+
 
     ## unknown command ##
     cons.send_error('unknown command', sys.argv[1])
