@@ -12,26 +12,21 @@ __all__ = [
 
 
 class Command:
-    def __init__(self, ids, check_func, execute_func) -> None:
+    def __init__(self, ids, execute_func) -> None:
         self.ids: tuple[str, ...] = ids
-        self.check: Callable[[None], bool] = check_func
-        self.execute: Callable[[None], None] = execute_func
+        self.execute: Callable[[tuple[str,...]], None] = execute_func
 
-    def run(self):
-        if self.check():
-            self.execute()
+    def run(self, args: tuple[str,...] = ()):
+        self.execute(args)
 
 
 ## add notes command ###########################################################
 
-def add_cmd_check() -> bool:
+def add_cmd_execute(args: tuple[str,...]) -> None:
     if len(sys.argv) < 3:
         cons.send_error('no add argument')
-        return False
+        return
 
-    return True
-
-def add_cmd_execute() -> None:
     add_note_messages: list[str] = sys.argv[2:]
 
     db.create_notes(add_note_messages)
@@ -57,14 +52,13 @@ add_cmd = Command(
         '-a', 'a',
         '-add', '--add', 'add',
     ),
-    add_cmd_check,
     add_cmd_execute
 )
 
 
 ## list all notes command ##########################################################
 
-def list_cmd_execute() -> None:
+def list_cmd_execute(args: tuple[str, ...]) -> None:
     # read database contents and write out to console
     for note in db.get_notes():
         cons.send_note(note)
@@ -74,14 +68,13 @@ list_cmd = Command(
         '-l', 'l', '-ls', 'ls',
         '-list', '--list', 'list',
     ),
-    lambda : True,
     list_cmd_execute
 )
 
 
 ## short list command ##########################################################
 
-def short_list_cmd_execute() -> None:
+def short_list_cmd_execute(args: tuple[str, ...]) -> None:
     # read database and send notes to console
     # ignore notes tagged :later:
     notes: list[db.Note] = db.get_tag_unmatches('que')
@@ -91,14 +84,13 @@ def short_list_cmd_execute() -> None:
 
 short_list_cmd = Command(
     ('sls', 'shortls', 'short'),
-    lambda : True,
     short_list_cmd_execute
 )
 
 
 ## focus list command ##########################################################
 
-def focus_list_cmd_execute() -> None:
+def focus_list_cmd_execute(args: tuple[str, ...]) -> None:
     # read database and send notes to console
     # ignore notes tagged :later:
     notes: list[db.Note] = db.get_tag_matches('mit')
@@ -108,22 +100,18 @@ def focus_list_cmd_execute() -> None:
         cons.send_note(note)
 
 focus_list_cmd = Command(
-    ('_', 'fls', 'focusls', 'focus'),
-    lambda : True,
+    ('fls', 'focusls', 'focus'),
     focus_list_cmd_execute
 )
 
 
 ## search (general) command ####################################################
 
-def search_cmd_check() -> bool:
+def search_cmd_execute(args: tuple[str, ...]) -> None:
     if len(sys.argv) < 3:
         cons.send_error('no search argument')
-        return False
+        return
 
-    return True
-
-def search_cmd_execute() -> None:
     match: str = sys.argv[2]
 
     for note in db.get_note_matches(match):
@@ -135,21 +123,17 @@ search_cmd = Command(
         '-f', '-fd', 'fd', '-find', '--find', 'find',
         '-filter', '--filter', 'filter',
     ),
-    search_cmd_check,
     search_cmd_execute
 )
 
 
 ## tag search command ##########################################################
 
-def tag_cmd_check() -> bool:
+def tag_cmd_execute(args: tuple[str, ...]) -> None:
     if len(sys.argv) < 3:
         cons.send_error('no search argument', 'tag')
-        return False
+        return
 
-    return True
-
-def tag_cmd_execute() -> None:
     tag: str = sys.argv[2]
 
     for note in db.get_tag_matches(tag):
@@ -157,17 +141,16 @@ def tag_cmd_execute() -> None:
 
 tag_cmd = Command(
     ('-t', 't', '-tag', '--tag', 'tag'),
-    tag_cmd_check,
     tag_cmd_execute
 )
 
 
 ## update command ##############################################################
 
-def update_cmd_check() -> bool:
+def update_cmd_execute(args: tuple[str, ...]) -> None:
     if len(sys.argv) < 4:
         cons.send_error('not enough update arguments', 'nid message')
-        return False
+        return
 
     upd_note_id: str = sys.argv[2]
 
@@ -176,19 +159,13 @@ def update_cmd_check() -> bool:
         id: int = int(upd_note_id.strip())
     except ValueError:
         cons.send_error('invalid input', upd_note_id)
-        return False
+        return
 
     if not db.is_valid(id):
         cons.send_error('not a valid note', str(id))
-        return False
+        return
 
-    return True
-
-def update_cmd_execute() -> None:
-    upd_note_id: str = sys.argv[2]
     message: str = sys.argv[3]
-
-    id: int = int(upd_note_id.strip())
 
     # update note
     db.update_note(id, message)
@@ -202,17 +179,16 @@ update_cmd = Command(
         '-u', 'u', '-update', '--update', 'update',
         '-e', 'e', '-edit', '--edit', 'edit',
     ),
-    update_cmd_check,
     update_cmd_execute
 )
 
 
 ## append command ##############################################################
 
-def append_cmd_check() -> bool:
+def append_cmd_execute(args: tuple[str, ...]) -> None:
     if len(sys.argv) < 4:
         cons.send_error('not enough append arguments', 'nid extension')
-        return False
+        return
 
     app_note_id: str = sys.argv[2]
 
@@ -221,19 +197,13 @@ def append_cmd_check() -> bool:
         id: int = int(app_note_id.strip())
     except ValueError:
         cons.send_error('invalid input', app_note_id)
-        return False
+        return
 
     if not db.is_valid(id):
         cons.send_error('not a valid note', str(id))
-        return False
+        return
 
-    return True
-
-def append_cmd_execute() -> None:
-    app_note_id: str = sys.argv[2]
     s: str = sys.argv[3]
-
-    id: int = int(app_note_id.strip())
 
     # retrieve note
     original_note, *_ = db.get_notes([id])
@@ -247,7 +217,6 @@ def append_cmd_execute() -> None:
 
 append_cmd = Command(
     ('-append', '--append', 'append'),
-    append_cmd_check,
     append_cmd_execute
 )
 
@@ -255,10 +224,10 @@ append_cmd = Command(
 ## delete command ##############################################################
 # delete selected database entries
 
-def delete_cmd_check() -> bool:
+def delete_cmd_execute(args: tuple[str, ...]) -> None:
     if len(sys.argv) < 3:
         cons.send_error('no delete argument', 'nid')
-        return False
+        return
 
     # check nid args
     note_ids: list[str] = sys.argv[2:]
@@ -267,18 +236,12 @@ def delete_cmd_check() -> bool:
         ids: list[int] = [int(nid.strip()) for nid in note_ids]
     except ValueError:
         cons.send_error('invalid input')
-        return False
+        return
 
     for id in ids:
         if not db.is_valid(id):
             cons.send_error('not a valid note', str(id))
-            return False
-
-    return True
-
-def delete_cmd_execute() -> None:
-    note_ids: list[str] = sys.argv[2:]
-    ids: list[int] = [int(nid.strip()) for nid in note_ids]
+            return
 
     # retrieve notes (for confirmation)
     conf_notes: list[db.Note] = db.get_notes(ids)
@@ -297,14 +260,13 @@ delete_cmd = Command(
         '-done', '--done', 'done',
         '-drop', '--drop', 'drop',
     ),
-    delete_cmd_check,
     delete_cmd_execute
 )
 
 
 ## clear command ###############################################################
 
-def clear_cmd_execute() -> None:
+def clear_cmd_execute(args: tuple[str, ...]) -> None:
     db.clear_database()
 
 clear_cmd = Command(
@@ -313,47 +275,40 @@ clear_cmd = Command(
         '-reset', '--reset',
         '-remove-all', '--remove-all',
     ),
-    lambda : True,
     clear_cmd_execute
 )
 
 
 ## rebase command ##############################################################
 
-def rebase_cmd_execute() -> None:
+def rebase_cmd_execute(args: tuple[str, ...]) -> None:
     # update database note ids
     db.rebase()
 
 rebase_cmd = Command(
     ('-rebase', '--rebase', 'rebase'),
-    lambda : True,
     rebase_cmd_execute
 )
 
 
 ## version command #############################################################
 
-def version_cmd_execute() -> None:
+def version_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_version(metadata.version("note"))
 
 version_cmd = Command(
     ('-version', '--version'),
-    lambda : True,
     version_cmd_execute
 )
 
 
 ## ? command ##########################################################
 
-#def _cmd_check() -> bool:
-#    return True
-#
-#def _cmd_execute() -> None:
+#def _cmd_execute(args: tuple[str, ...]) -> None:
 #    pass
 #
 #_cmd = Command(
 #    ,
-#    _cmd_check,
 #    _cmd_execute
 #)
 
