@@ -2,6 +2,7 @@ import re
 from rich.console import Console
 from note import notedb as db
 
+
 __all__ = [
     'send_version',
     'send_note',

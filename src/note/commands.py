@@ -11,11 +11,15 @@ __all__ = [
 
 
 class Command:
+    '''Command behavior objects.'''
     def __init__(self, ids, execute_func) -> None:
         self.ids: tuple[str, ...] = ids
         self.execute: Callable[[tuple[str, ...]], None] = execute_func
 
-    def run(self, args: tuple[str, ...] = ()):
+    def __repr__(self) -> str:
+        return f'Command({self.ids[0]!r}, {self.execute!r})'
+
+    def run(self, args: tuple[str, ...] = ()) -> None:
         '''Run (execute) command.'''
         self.execute(args)
 
@@ -49,10 +53,7 @@ def add_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_confirmation(note, "added")
 
 add_cmd = Command(
-    (
-        '-a', 'a',
-        '-add', '--add', 'add',
-    ),
+    ('add',  'a'),
     add_cmd_execute
 )
 
@@ -67,11 +68,7 @@ def list_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 list_cmd = Command(
-    (
-        '-l', 'l', '-ls', 'ls',
-        '-list', '--list', 'list',
-        'long', 'all',
-    ),
+    ('list', 'ls', 'long', 'all'),
     list_cmd_execute
 )
 
@@ -88,7 +85,7 @@ def short_list_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 short_list_cmd = Command(
-    ('sls', 'shortls', 'short'),
+    ('shortls', 'short', 'slist', 'sls'),
     short_list_cmd_execute
 )
 
@@ -106,7 +103,7 @@ def focus_list_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 focus_list_cmd = Command(
-    ('fls', 'focusls', 'focus'),
+    ('focusls', 'focus', 'flist', 'fls'),
     focus_list_cmd_execute
 )
 
@@ -126,11 +123,7 @@ def search_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 search_cmd = Command(
-    (
-        '-s', 's', '-search', '--search', 'search',
-        '-f', '-fd', 'fd', '-find', '--find', 'find',
-        '-filter', '--filter', 'filter',
-    ),
+    ('search', 's', 'find', 'f', 'fd', 'filter'),
     search_cmd_execute
 )
 
@@ -150,7 +143,7 @@ def tag_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 tag_cmd = Command(
-    ('-t', 't', '-tag', '--tag', 'tag'),
+    ('tag', 't'),
     tag_cmd_execute
 )
 
@@ -187,10 +180,7 @@ def update_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_confirmation(confirmation_note, "updated")
 
 update_cmd = Command(
-    (
-        '-u', 'u', '-update', '--update', 'update',
-        '-e', 'e', '-edit', '--edit', 'edit',
-    ),
+    ('update', 'u', 'edit', 'e'),
     update_cmd_execute
 )
 
@@ -230,7 +220,7 @@ def append_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_confirmation(confirmation_note, "appended")
 
 append_cmd = Command(
-    ('-append', '--append', 'append'),
+    ('append', 'app'),
     append_cmd_execute
 )
 
@@ -269,13 +259,7 @@ def delete_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_confirmation(note, "done")
 
 delete_cmd = Command(
-    (
-        '-d', 'd', '-delete', '--delete', 'delete',
-        '-rm', 'rm', '-remove', '--remove', 'remove',
-        '-complete', '--complete', 'complete',
-        '-done', '--done', 'done',
-        '-drop', '--drop', 'drop',
-    ),
+    ('delete', 'd', 'remove', 'rm', 'done', 'drop', 'complete'),
     delete_cmd_execute
 )
 
@@ -288,11 +272,7 @@ def clear_cmd_execute(args: tuple[str, ...]) -> None:
     db.clear_database()
 
 clear_cmd = Command(
-    (
-        '-clear', '--clear',
-        '-reset', '--reset',
-        '-remove-all', '--remove-all',
-    ),
+    ('-clear', '--clear', '-reset', '--reset', '-remove-all', '--remove-all'),
     clear_cmd_execute
 )
 
@@ -306,7 +286,7 @@ def rebase_cmd_execute(args: tuple[str, ...]) -> None:
     db.rebase()
 
 rebase_cmd = Command(
-    ('-rebase', '--rebase', 'rebase'),
+    ('rebase', '-rebase', '--rebase'),
     rebase_cmd_execute
 )
 
@@ -319,7 +299,7 @@ def version_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_version(metadata.version("note"))
 
 version_cmd = Command(
-    ('-version', '--version'),
+    ('version', '-version', '--version'),
     version_cmd_execute
 )
 

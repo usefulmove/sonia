@@ -3,6 +3,7 @@ from datetime import datetime
 import duckdb
 from typing import NamedTuple
 
+
 __all__ = [
     'PRODUCTION',
     'Note',
@@ -24,10 +25,13 @@ PRODUCTION = True
 
 
 class Note(NamedTuple):
-    '''Note interface objects'''
+    '''Note interface objects.'''
     id: int
     date: datetime
     message: str
+
+    def __repr__(self) -> str:
+        return f'Note({self.id!r}, {self.date!r}, {self.message!r})'
 
 
 ## notes database ##
