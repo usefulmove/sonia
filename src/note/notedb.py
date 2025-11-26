@@ -24,6 +24,7 @@ PRODUCTION = True
 
 
 class Note(NamedTuple):
+    '''Note interface objects'''
     id: int
     date: datetime
     message: str

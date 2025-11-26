@@ -16,12 +16,15 @@ class Command:
         self.execute: Callable[[tuple[str, ...]], None] = execute_func
 
     def run(self, args: tuple[str, ...] = ()):
+        '''Run (execute) command.'''
         self.execute(args)
 
 
 ## add notes command ###########################################################
 
 def add_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Add notes command execution function.'''
+
     if len(args) < 1:
         cons.send_error('no add argument')
         return
@@ -57,6 +60,8 @@ add_cmd = Command(
 ## list all notes command ##########################################################
 
 def list_cmd_execute(args: tuple[str, ...]) -> None:
+    '''List notes command execution function.'''
+
     # read database contents and write out to console
     for note in db.get_notes():
         cons.send_note(note)
@@ -74,8 +79,9 @@ list_cmd = Command(
 ## short list command ##########################################################
 
 def short_list_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Limited (short) list command execution function. Ignore :que: tagged notes.'''
+
     # read database and send notes to console
-    # ignore notes tagged :later:
     notes: list[db.Note] = db.get_tag_unmatches('que')
 
     for note in notes:
@@ -90,8 +96,9 @@ short_list_cmd = Command(
 ## focus list command ##########################################################
 
 def focus_list_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Focus list command execution function. Show :mit: and :tod: tagged notes.'''
+
     # read database and send notes to console
-    # ignore notes tagged :later:
     notes: list[db.Note] = db.get_tag_matches('mit')
     notes += db.get_tag_matches('tod')
 
@@ -107,6 +114,8 @@ focus_list_cmd = Command(
 ## search (general) command ####################################################
 
 def search_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Search notes command execution function. Show notes that match search term.'''
+
     if len(args) < 1:
         cons.send_error('no search argument')
         return
@@ -129,6 +138,8 @@ search_cmd = Command(
 ## tag search command ##########################################################
 
 def tag_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Search tag command execution function. Show notes that contain provided tag.'''
+
     if len(args) < 1:
         cons.send_error('no search argument', 'tag')
         return
@@ -147,6 +158,8 @@ tag_cmd = Command(
 ## update command ##############################################################
 
 def update_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Update note command execution function. Change note at provided note ID (nid).'''
+
     if len(args) < 2:
         cons.send_error('not enough update arguments', 'nid message')
         return
@@ -185,6 +198,8 @@ update_cmd = Command(
 ## append command ##############################################################
 
 def append_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Append note command execution function. Append text to provided note ID (nid).'''
+
     if len(args) < 2:
         cons.send_error('not enough append arguments', 'nid extension')
         return
@@ -224,6 +239,8 @@ append_cmd = Command(
 # delete selected database entries
 
 def delete_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Delete note command execution function. Delete provided note IDs (nids).'''
+
     if len(args) < 1:
         cons.send_error('no delete argument', 'nid')
         return
@@ -266,6 +283,8 @@ delete_cmd = Command(
 ## clear command ###############################################################
 
 def clear_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Clear database command execution function.'''
+
     db.clear_database()
 
 clear_cmd = Command(
@@ -281,6 +300,8 @@ clear_cmd = Command(
 ## rebase command ##############################################################
 
 def rebase_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Rebase note IDs command execution function.'''
+
     # update database note ids
     db.rebase()
 
@@ -293,23 +314,14 @@ rebase_cmd = Command(
 ## version command #############################################################
 
 def version_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Version command execution function.'''
+
     cons.send_version(metadata.version("note"))
 
 version_cmd = Command(
     ('-version', '--version'),
     version_cmd_execute
 )
-
-
-## ? command ##########################################################
-
-#def _cmd_execute(args: tuple[str, ...]) -> None:
-#    pass
-#
-#_cmd = Command(
-#    ,
-#    _cmd_execute
-#)
 
 
 ## command list ##
