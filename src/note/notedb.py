@@ -83,14 +83,14 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
         if not ids:
             # retrieve all notes
             query = f"""
-                select
-                    {NID_COLUMN},
-                    {TIMESTAMP_COLUMN},
-                    {MESSAGE_COLUMN}
-                from
-                    {TABLE}
-                order by
-                    1, 2;
+            select
+                {NID_COLUMN},
+                {TIMESTAMP_COLUMN},
+                {MESSAGE_COLUMN}
+            from
+                {TABLE}
+            order by
+                1, 2;
             """
 
             rows = con.execute(query).fetchall()
@@ -99,16 +99,16 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
 
             # retrieve selected nids
             query = f"""
-                select
-                    {NID_COLUMN},
-                    {TIMESTAMP_COLUMN},
-                    {MESSAGE_COLUMN}
-                from
-                    {TABLE}
-                where
-                    {NID_COLUMN} in ({query_insert})
-                order by
-                    1, 2;
+            select
+                {NID_COLUMN},
+                {TIMESTAMP_COLUMN},
+                {MESSAGE_COLUMN}
+            from
+                {TABLE}
+            where
+                {NID_COLUMN} in ({query_insert})
+            order by
+                1, 2;
             """
 
             rows = con.execute(query, ids).fetchall()
@@ -125,8 +125,8 @@ def delete_notes(ids: tuple[int, ...]) -> None:
     with get_connection() as con:
         for id in ids:
             query = f"""
-                delete from {TABLE}
-                where {NID_COLUMN} = ?;
+            delete from {TABLE}
+            where {NID_COLUMN} = ?;
             """
             con.execute(query, [id])
 
@@ -142,16 +142,16 @@ def get_note_matches(match: str) -> list[Note]:
     '''Return all notes that have text matching input.'''
 
     query = f"""
-        select
-            {NID_COLUMN},
-            {TIMESTAMP_COLUMN},
-            {MESSAGE_COLUMN}
-        from
-            {TABLE}
-        where
-            {MESSAGE_COLUMN} ilike ?
-        order by
-            1, 2;
+    select
+        {NID_COLUMN},
+        {TIMESTAMP_COLUMN},
+        {MESSAGE_COLUMN}
+    from
+        {TABLE}
+    where
+        {MESSAGE_COLUMN} ilike ?
+    order by
+        1, 2;
     """
 
     with get_connection() as con:
@@ -167,16 +167,16 @@ def get_note_unmatches(unmatch: str) -> list[Note]:
     '''Return all notes that do not have text matching input.'''
 
     query = f"""
-        select
-            {NID_COLUMN},
-            {TIMESTAMP_COLUMN},
-            {MESSAGE_COLUMN}
-        from
-            {TABLE}
-        where
-            {MESSAGE_COLUMN} not ilike ?
-        order by
-            1, 2;
+    select
+        {NID_COLUMN},
+        {TIMESTAMP_COLUMN},
+        {MESSAGE_COLUMN}
+    from
+        {TABLE}
+    where
+        {MESSAGE_COLUMN} not ilike ?
+    order by
+        1, 2;
     """
 
     with get_connection() as con:
@@ -192,16 +192,16 @@ def get_tag_matches(tag: str) -> list[Note]:
     '''Return all notes that have tags matching input.'''
 
     query = f"""
-        select
-            {NID_COLUMN},
-            {TIMESTAMP_COLUMN},
-            {MESSAGE_COLUMN}
-        from
-            {TABLE}
-        where
-            {MESSAGE_COLUMN} ilike ?
-        order by
-            1, 2;
+    select
+        {NID_COLUMN},
+        {TIMESTAMP_COLUMN},
+        {MESSAGE_COLUMN}
+    from
+        {TABLE}
+    where
+        {MESSAGE_COLUMN} ilike ?
+    order by
+        1, 2;
     """
 
     with get_connection() as con:
@@ -217,16 +217,16 @@ def get_tag_unmatches(tag: str) -> list[Note]:
     '''Return all notes that do not have tags matching input.'''
 
     query = f"""
-        select
-            {NID_COLUMN},
-            {TIMESTAMP_COLUMN},
-            {MESSAGE_COLUMN}
-        from
-            {TABLE}
-        where
-            {MESSAGE_COLUMN} not ilike ?
-        order by
-            1, 2;
+    select
+        {NID_COLUMN},
+        {TIMESTAMP_COLUMN},
+        {MESSAGE_COLUMN}
+    from
+        {TABLE}
+    where
+        {MESSAGE_COLUMN} not ilike ?
+    order by
+        1, 2;
     """
 
     with get_connection() as con:
@@ -242,12 +242,12 @@ def update_note(id: int, message: str) -> None:
     '''Replace note text of identified note with provided input.'''
 
     query = f"""
-        update
-            {TABLE}
-        set
-            {MESSAGE_COLUMN} = ?
-        where
-            {NID_COLUMN} = ?;
+    update
+        {TABLE}
+    set
+        {MESSAGE_COLUMN} = ?
+    where
+        {NID_COLUMN} = ?;
     """
 
     with get_connection() as con:
@@ -260,13 +260,13 @@ def create_notes(entries: tuple[str, ...]) -> None:
     with get_connection() as con:
         for message in entries:
             query = f"""
-                insert into {SCHEMA}.{TABLE}
-                    ({NID_COLUMN}, {TIMESTAMP_COLUMN}, {MESSAGE_COLUMN})
-                values (
-                    (select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}),
-                    cast('{datetime.now()}' as timestamp),
-                    ?
-                );
+            insert into {SCHEMA}.{TABLE}
+                ({NID_COLUMN}, {TIMESTAMP_COLUMN}, {MESSAGE_COLUMN})
+            values (
+                (select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}),
+                cast('{datetime.now()}' as timestamp),
+                ?
+            );
             """
             con.execute(query, [message])
 
@@ -275,25 +275,25 @@ def rebase() -> None:
     '''Rebase note identifiers starting at 1.'''
 
     query = f"""
-        with n{NID_COLUMN} as (
-                select
-                    row_number() over(order by {NID_COLUMN})
-                        as updated_{NID_COLUMN},
-                    {NID_COLUMN},
-                    {TIMESTAMP_COLUMN},
-                    {MESSAGE_COLUMN}
-                from
-                    {TABLE}
-        )
+    with n{NID_COLUMN} as (
+            select
+                row_number() over(order by {NID_COLUMN})
+                    as updated_{NID_COLUMN},
+                {NID_COLUMN},
+                {TIMESTAMP_COLUMN},
+                {MESSAGE_COLUMN}
+            from
+                {TABLE}
+    )
 
-        update
-            {TABLE} n
-        set
-            {NID_COLUMN} = nn.updated_{NID_COLUMN}
-        from
-            n{NID_COLUMN} nn
-        where
-            n.{NID_COLUMN} = nn.{NID_COLUMN};
+    update
+        {TABLE} n
+    set
+        {NID_COLUMN} = nn.updated_{NID_COLUMN}
+    from
+        n{NID_COLUMN} nn
+    where
+        n.{NID_COLUMN} = nn.{NID_COLUMN};
     """
 
     with get_connection() as con:
@@ -304,12 +304,12 @@ def is_valid(id: int) -> bool:
     '''Return whether argument is a valid note identifier.'''
 
     query = f"""
-        select
-            count(*)
-        from
-            {TABLE}
-        where
-            {NID_COLUMN} = ?;
+    select
+        count(*)
+    from
+        {TABLE}
+    where
+        {NID_COLUMN} = ?;
     """
 
     with get_connection() as con:
