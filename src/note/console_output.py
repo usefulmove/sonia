@@ -16,7 +16,7 @@ __all__ = [
 console = Console()
 
 
-# colors
+# console colors
 CDIM = '#616161'
 CSEP = '#454545'
 CEMPH = '#faf6e4'
