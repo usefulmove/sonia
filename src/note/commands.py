@@ -256,7 +256,7 @@ def delete_cmd_execute(args: tuple[str, ...]) -> None:
     db.delete_notes(ids)
 
     for note in conf_notes:
-        cons.send_confirmation(note, "done")
+        cons.send_confirmation(note, "removed")
 
 delete_cmd = Command(
     ('delete', 'd', 'remove', 'rm', 'done', 'drop', 'complete'),
