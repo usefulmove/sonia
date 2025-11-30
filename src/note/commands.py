@@ -35,21 +35,10 @@ def add_cmd_execute(args: tuple[str, ...]) -> None:
 
     add_note_messages: tuple[str, ...] = args
 
-    db.create_notes(add_note_messages)
+    db_notes: list[db.Note] = db.create_notes(add_note_messages)
 
-    # read notes back from database and send confirmation
-
-    db_notes: list[db.Note] = []
-
-    for msg in add_note_messages:
-        db_notes += db.get_note_matches(msg)
-
-    disp_notes: list[db.Note] = sorted(
-        db_notes,
-        key=lambda note: note.id,
-    )[-len(add_note_messages):] # keep same number added
-
-    for note in disp_notes:
+    # send confirmation using notes read back from database
+    for note in db_notes:
         cons.send_confirmation(note, "added")
 
 add_cmd = Command(

@@ -254,8 +254,10 @@ def update_note(id: int, message: str) -> None:
         con.execute(query, [message, id])
 
 
-def create_notes(entries: tuple[str, ...]) -> None:
+def create_notes(entries: tuple[str, ...]) -> list[Note]:
     '''Add notes to database using note text inputs.'''
+
+    rows: list[tuple[int, datetime, str]] = []
 
     with get_connection() as con:
         for message in entries:
@@ -266,9 +268,15 @@ def create_notes(entries: tuple[str, ...]) -> None:
                 (select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}),
                 cast('{datetime.now()}' as timestamp),
                 ?
-            );
+            )
+            returning *;
             """
-            con.execute(query, [message])
+            rows += con.execute(query, [message]).fetchall()
+
+    # covert each tuple into a Note
+    notes: list[Note] = [Note(*row) for row in rows]
+
+    return notes
 
 
 def rebase() -> None:
