@@ -58,7 +58,7 @@ Once installed, use the `sonia` command.
 Add one note or multiple notes at once.
 
 ```bash
-sonia add "Buy milk" "Call the mechanic about the car"
+sonia add "buy milk" "call the mechanic about the car"
 ```
 
 **List Notes**
