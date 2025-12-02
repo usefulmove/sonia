@@ -126,7 +126,7 @@ def tag_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_error('no search argument', 'tag')
         return
 
-    tag: str = args[0]
+    tag: str = args[0].strip(':')
 
     for note in db.get_tag_matches(tag):
         cons.send_note(note)
