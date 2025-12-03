@@ -282,7 +282,7 @@ rebase_cmd = Command(
 def version_cmd_execute(args: tuple[str, ...]) -> None:
     '''Version command execution function.'''
 
-    cons.send_version(metadata.version("note"))
+    cons.send_version(metadata.version("sonia"))
 
 version_cmd = Command(
     ('version', 'v', '-version', '--version'),
@@ -290,8 +290,41 @@ version_cmd = Command(
 )
 
 
-## command list ##
+## select database command #####################################################
+# use specified database
 
+def db_cmd_execute(args: tuple[str, ...]) -> None:
+    '''Use specified database command execution function.'''
+
+    if len(args) < 1:
+        cons.send_error('no database argument')
+        return
+
+    db_path, *rest = args
+
+    # set database path
+    if not db.set_path(db_path):
+        cons.send_error('could not use database path', db_path)
+        return
+
+    # execute command
+    match rest:
+        case cmd_id, *cargs if cmd_id in commands:
+            commands[cmd_id].run(tuple(cargs))
+        case []: # no args
+            commands['focus'].run()
+        case unknown, *_: 
+            cons.send_error('unknown command', unknown)
+
+
+db_cmd = Command(
+    ('db',),
+    db_cmd_execute
+)
+
+
+
+## command list - register commands ##
 command_list = [
     add_cmd,
     list_cmd,
@@ -305,9 +338,10 @@ command_list = [
     clear_cmd,
     rebase_cmd,
     version_cmd,
+    db_cmd,
 ]
 
 
-## build command dictionary ####################################################
 
+## build command dictionary ##
 commands: dict[str, Command] = {id: cmd for cmd in command_list for id in cmd.ids}

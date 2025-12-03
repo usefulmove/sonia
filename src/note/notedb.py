@@ -5,7 +5,6 @@ from typing import NamedTuple
 
 
 __all__ = [
-    'PRODUCTION',
     'Note',
     'create_notes',
     'is_valid',
@@ -18,10 +17,8 @@ __all__ = [
     'rebase',
     'delete_notes',
     'clear_database',
+    'set_path',
 ]
-
-
-PRODUCTION = True
 
 
 class Note(NamedTuple):
@@ -34,22 +31,21 @@ class Note(NamedTuple):
         return f'Note({self.id!r}, {self.date!r}, {self.message!r})'
 
 
-## notes database ##
-if PRODUCTION:
-    DB_FILENAME = '.notes.db'
-    DB_PATH = '~/'
-else:
-    DB_FILENAME = 'notes.db'
-    DB_PATH = './test/'
-
-
 ## database schema ##
-
 SCHEMA = 'coredb'
 TABLE = 'notes'
 NID_COLUMN = 'nid'
 TIMESTAMP_COLUMN = 'date'
 MESSAGE_COLUMN = 'message'
+
+
+## database path ##
+db_path: str = '~/.notes.db'
+
+def set_path(path: str) -> bool:
+    global db_path
+    db_path = path
+    return True
 
 
 ## module functions ##
@@ -58,7 +54,7 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     '''Return the note database connection.'''
 
     # connect to database (or create if it doesn't exist)
-    con = duckdb.connect(os.path.expanduser(DB_PATH + DB_FILENAME))
+    con = duckdb.connect(os.path.expanduser(db_path))
 
     # create schema and notes table
     con.execute(f'create schema if not exists {SCHEMA};')

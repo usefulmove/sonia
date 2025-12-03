@@ -6,9 +6,6 @@ from note import commands as cmd
 
 
 def main() -> None:
-    if not db.PRODUCTION:
-        cons.send_warning('running in TEST mode')
-
     match sys.argv:
         case _, cmd_id, *args if cmd_id in cmd.commands:
             cmd.commands[cmd_id].run(tuple(args))
