@@ -1,6 +1,6 @@
 import re
 from rich.console import Console
-from note import notedb as db
+from sonia import notedb as db
 
 
 __all__ = [

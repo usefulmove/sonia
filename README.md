@@ -33,8 +33,8 @@ If you want to contribute or modify the source code, this project uses `uv` for 
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/usefulmove/note.git](https://github.com/usefulmove/note.git)
-    cd note
+    git clone [https://github.com/usefulmove/sonia.git](https://github.com/usefulmove/sonia.git)
+    cd sonia
     ```
 
 2.  **Install dependencies:**

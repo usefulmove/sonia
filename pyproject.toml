@@ -20,4 +20,4 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [project.scripts]
-note = "note.main:main"
+sonia = "sonia.main:main"

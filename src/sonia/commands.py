@@ -1,7 +1,7 @@
 from importlib import metadata
 from collections.abc import Callable
-from note import notedb as db
-from note import console_output as cons
+from sonia import notedb as db
+from sonia import console_output as cons
 
 
 __all__ = [

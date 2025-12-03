@@ -1,4 +1,4 @@
-from note.main import main
+from sonia.main import main
 
 
 if __name__ == "__main__":
