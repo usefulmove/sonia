@@ -74,7 +74,7 @@ def short_list_cmd_execute(args: tuple[str, ...]) -> None:
         cons.send_note(note)
 
 short_list_cmd = Command(
-    ('shortls', 'short', 'slist', 'sls', '_'),
+    ('important', 'imp', 'shortls', 'short', 'slist', 'sls', '_'),
     short_list_cmd_execute
 )
 
