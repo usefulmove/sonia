@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import sys
 from sonia import console_output as cons
 from sonia import commands as cmd
