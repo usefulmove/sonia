@@ -1,6 +1,7 @@
 import re
 from rich.console import Console
 from sonia import notedb as db
+from time import sleep
 
 
 __all__ = [
@@ -41,6 +42,8 @@ def send_note(note: db.Note) -> None:
         f' [{CSEP}]|[/] ' +
         f'[{CNORM}]{color_tags(note.message)}[/]'
     )
+
+    sleep(0.016)
 
 
 def send_confirmation(note: db.Note, action: str) -> None:
