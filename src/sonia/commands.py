@@ -323,8 +323,11 @@ db_cmd = Command(
 ## decide command ##############################################################
 def decide_cmd_execute(_: tuple[str, ...] = ()) -> None:
     '''Provide helpful output.'''
-    cons.send_consider_pause(3.8)
-    cons.send_message(decisions[randrange(len(decisions))], str(randrange(52, 98)))
+    cons.send_consider_pause(6.18)
+
+    choice: int = randrange(len(decisions))
+    cons.send_message(decisions[choice][0], decisions[choice][1])
+
     return
 
 decide_cmd = Command(
@@ -333,26 +336,66 @@ decide_cmd = Command(
 )
 
 decisions = (
-    "do it",
-    "it is certain",
-    "it is decidedly so",
-    "without a doubt",
-    "definitely",
-    "rely on it",
-    "most likely",
-    "outlook good",
-    "yes",
-    "signs point to yes",
-    "reply hazy, try again",
-    "ask again later",
-    "better not tell you now",
-    "cannot predict now",
-    "focus and ask again",
-    "don't count on it",
-    "no",
-    "sources say no",
-    "outlook not so good",
-    "doubtful",
+    ("move forward", "tao"),
+    ("the path is open", "tao"),
+    ("trust yourself", "tao"),
+    ("clarity is inside you", "tao"),
+    ("step with confidence", "tao"),
+    ("lean in", "tao"),
+    ("the moment supports you", "tao"),
+    ("yes ... quietly and deeply", "tao"),
+    ("your body has the answer", "tao"),
+    ("go in the warm direction", "tao"),
+    ("nothing blocks your step", "tao"),
+
+    ("look once again with soft eyes", "open"),
+    ("pause ... the water is settling", "open"),
+    ("not yet", "open"),
+    ("the question has not ripened", "open"),
+    ("breathe ... then return", "open"),
+    ("listen beneath the sound", "open"),
+    ("allow the answer to reveal itself", "open"),
+    ("uncertainty is the way", "open"),
+    ("first rest your mind", "open"),
+    ("feel ... then ask again", "open"),
+    ("clouds drift. clarity follows.", "open"),
+    ("the door is there, but not open", "open"),
+
+    ("consider a different route", "connect"),
+    ("may not be aligned", "connect"),
+    ("release this option", "connect"),
+    ("step back and reassess", "connect"),
+    ("no ... but not forever", "connect"),
+    ("energy says otherwise", "connect"),
+    ("do not force it", "connect"),
+    ("not this day", "connect"),
+    ("a river bends elsewhere", "connect"),
+    ("choose differently", "connect"),
+    ("your footing is not steady here", "connect"),
+    ("the way closes gently", "connect"),
+
+    ("step toward fear with softness", "courage"),
+    ("courage comes after the exhale", "courage"),
+    ("move in the direction that frightens you", "courage"),
+    ("your strength is already aroused", "courage"),
+    ("small steps move mountains", "courage"),
+    ("hold steady. you are enough.", "courage"),
+    ("be water", "courage"),
+
+    ("let go of the need for an answer", "acceptance"),
+    ("what you release releases you", "acceptance"),
+    ("the moment is enough", "acceptance"),
+    ("the tide will return on its own", "acceptance"),
+    ("rest inside not-knowing", "acceptance"),
+    ("do not grasp, do not push", "acceptance"),
+    ("sit with what is true", "acceptance"),
+
+    ("listen to the quietest voice", "trust"),
+    ("your body leans before you decide", "trust"),
+    ("follow the feeling beneath the feeling", "trust"),
+    ("the answer vibrates inside you", "trust"),
+    ("the subtle shift you noticed is the clue", "trust"),
+    ("sense the direction, not the outcome", "trust"),
 )
 
 
