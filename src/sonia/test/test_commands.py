@@ -6,13 +6,17 @@ entries: tuple[str, ...] = ('test_one', 'test_two', 'test_three')
 test_path = './src/sonia/test/commands_test.db'
 
 
-def test_cmd() -> None:
+def test_setup_database() -> None:
     print('test: sonia db version')
     cmd.commands['db'].run((test_path, 'version'))
 
     print('test: sonia add [...]')
     cmd.commands['add'].run(entries)
 
+    assert os.path.exists(test_path)
+
+
+def test_commands() -> None:
     print('test: sonia list')
     cmd.commands['list'].run()
 
