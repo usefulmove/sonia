@@ -6,10 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "duckdb",
-    "mypy>=1.18.2",
     "pytest>=9.0.1",
     "rich>=14.2.0",
-    "ruff>=0.14.6",
 ]
 
 [build-system]
@@ -18,6 +16,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.8",
+    "ty>=0.0.1a31",
+]
 
 [project.scripts]
 sonia = "sonia.main:main"
