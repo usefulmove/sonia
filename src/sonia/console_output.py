@@ -20,11 +20,11 @@ console = Console()
 
 
 # console colors
-CDIM = '#616161'
-CSEP = '#454545'
+CDIM  = '#616161'
+CSEP  = '#454545'
 CEMPH = '#faf6e4'
 CNORM = 'default'
-CERR = '#ff0000'
+CERR  = '#ff0000'
 CWARN = '#fff670'
 
 
