@@ -1,13 +1,19 @@
 import os
 from sonia import notedb as db
 
+# needs coverage:
+# 'get_notes',
+# 'rebase',
+# 'delete_notes',
+# 'clear_database',
 
-entries: list[str] = ['test_one', 'test_two', 'test_three']
+
+entries: tuple[str, ...] = ('test_one', 'test_two', 'test_three')
 test_path = './src/sonia/test/test.db'
 
 
 def test_set_path() -> None:
-    assert db.set_path(test_path) == True
+    assert db.set_path(test_path)
 
 
 def test_create_notes() -> None:
@@ -19,6 +25,37 @@ def test_create_notes() -> None:
 def test_is_valid() -> None:
     assert db.is_valid(len(entries))
     assert not db.is_valid(len(entries) + 1)
+
+
+def test_get_note_matches() -> None:
+    notes: list[db.Note] = db.get_note_matches('test')
+    assert len(notes) == len(entries)
+
+
+def test_get_note_unmatches() -> None:
+    notes: list[db.Note] = db.get_note_unmatches('one')
+    assert len(notes) == 2
+
+
+def test_update_and_read_note() -> None:
+    update_message = 'test_one :tag:'
+
+    db.update_note(1, update_message)
+
+    notes: list[db.Note] = db.get_tag_matches('tag')
+
+    assert len(notes) == 1
+    assert notes[0].message == update_message
+
+
+def test_get_tag_matches_unmatches() -> None:
+    tag = 'tag'
+
+    matches: int = len(db.get_tag_matches(tag)) 
+    unmatches: int = len(db.get_tag_unmatches(tag)) 
+
+    assert matches != unmatches
+    assert matches + unmatches == len(entries)
 
 
 def test_clean_up() -> None:
