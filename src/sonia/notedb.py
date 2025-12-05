@@ -22,7 +22,7 @@ __all__ = [
 
 
 class Note(NamedTuple):
-    '''Note interface objects.'''
+    '''note interface objects'''
     id: int
     date: datetime
     message: str
