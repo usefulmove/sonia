@@ -1,6 +1,6 @@
 [project]
 name = "sonia"
-version = "0.3.5"
+version = "0.3.8"
 description = "Simple note capture"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -16,6 +16,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-x"
 
 [dependency-groups]
 dev = [
