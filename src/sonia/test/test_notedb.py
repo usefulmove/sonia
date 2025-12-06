@@ -1,9 +1,17 @@
 import os
+from pathlib import Path
 from sonia import notedb as db
 
 
+test_folder = Path(__file__).parent
+test_path = str(test_folder / 'notedb_test.db')
+
+
 entries: tuple[str, ...] = ('test_one', 'test_two', 'test_three')
-test_path = './src/sonia/test/notedb_test.db'
+
+
+def test_test_path() -> None:
+    assert os.path.exists(test_folder)
 
 
 def test_set_path() -> None:

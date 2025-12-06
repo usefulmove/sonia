@@ -1,9 +1,18 @@
 import os
+from pathlib import Path
 from sonia import commands as cmd
 
 
+test_folder = Path(__file__).parent
+test_path = str(test_folder / 'commands_test.db')
+
+
 entries: tuple[str, ...] = ('test_one', 'test_two', 'test_three')
-test_path = './src/sonia/test/commands_test.db'
+
+
+def test_test_path() -> None:
+    print('test: check test path')
+    assert os.path.exists(test_folder)
 
 
 def test_setup_database() -> None:
