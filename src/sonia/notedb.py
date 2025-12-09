@@ -45,15 +45,15 @@ MESSAGE_COLUMN = 'message'
 
 
 ## database path ##
-db_path: str = '~/.notes.db'
+db_path: Path = Path.home() / ".sonia.db"
 
-def set_path(path: str) -> bool:
+def set_path(string_path: str) -> bool:
     global db_path
 
-    if not Path(path).parent.exists():
+    if not Path(string_path).parent.exists():
         return False
 
-    db_path = path
+    db_path = Path(string_path)
 
     return True
 
