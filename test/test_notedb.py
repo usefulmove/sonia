@@ -1,13 +1,16 @@
 import os
+from collections.abc import Iterator
 from pathlib import Path
+
+import pytest
 from sonia import notedb as db
 
 
 test_folder = Path(__file__).parent
-test_path = str(test_folder / 'notedb_test.db')
+test_path = str(test_folder / "notedb_test.db")
 
 
-entries: tuple[str, ...] = ('test_one', 'test_two', 'test_three')
+entries: tuple[str, ...] = ("test_one", "test_two", "test_three")
 
 
 def test_set_path() -> None:
@@ -31,31 +34,31 @@ def test_get_notes() -> None:
 
 
 def test_get_note_matches() -> None:
-    notes: list[db.Note] = db.get_note_matches('test')
+    notes: list[db.Note] = db.get_note_matches("test")
     assert len(notes) == len(entries)
 
 
 def test_get_note_unmatches() -> None:
-    notes: list[db.Note] = db.get_note_unmatches('one')
+    notes: list[db.Note] = db.get_note_unmatches("one")
     assert len(notes) == 2
 
 
 def test_update_and_read_note() -> None:
-    update_message = 'test_one :tag:'
+    update_message = "test_one :tag:"
 
     db.update_note(1, update_message)
 
-    notes: list[db.Note] = db.get_tag_matches('tag')
+    notes: list[db.Note] = db.get_tag_matches("tag")
 
     assert len(notes) == 1
     assert notes[0].message == update_message
 
 
 def test_get_tag_matches_unmatches() -> None:
-    tag = 'tag'
+    tag = "tag"
 
-    matches: int = len(db.get_tag_matches(tag)) 
-    unmatches: int = len(db.get_tag_unmatches(tag)) 
+    matches: int = len(db.get_tag_matches(tag))
+    unmatches: int = len(db.get_tag_unmatches(tag))
 
     assert matches != unmatches
     assert matches + unmatches == len(entries)
@@ -65,7 +68,7 @@ def test_delete_notes() -> None:
     nids: tuple[int, int] = (1, 3)
 
     deleted_notes: list[db.Note] = db.delete_notes(nids)
-    
+
     returned_nids = tuple(note.id for note in deleted_notes)
 
     assert nids == returned_nids
@@ -89,7 +92,9 @@ def test_clear_database() -> None:
     assert not db.get_notes()
 
 
-def test_clean_up() -> None:
-    # remove test database if exists
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_notedb_test_database() -> Iterator[None]:
+    """Remove notedb test database file after tests."""
+    yield
     if os.path.exists(test_path):
         os.remove(test_path)
