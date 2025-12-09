@@ -1,3 +1,4 @@
+import os
 from importlib import metadata
 from collections.abc import Callable
 from random import randrange
@@ -51,6 +52,8 @@ add_cmd = Command(
 def list_cmd_execute(_: tuple[str, ...] = ()) -> None:
     '''List notes command execution function.'''
 
+    os.system("clear -x")
+
     # read database contents and write out to console
     for note in db.get_notes():
         cons.send_note(note)
@@ -65,6 +68,8 @@ list_cmd = Command(
 
 def short_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
     '''Limited (short) list command execution function. Ignore :que: tagged notes.'''
+
+    os.system("clear -x")
 
     # read database and send notes to console
     notes: list[db.Note] = db.get_tag_unmatches('que')
@@ -82,6 +87,8 @@ short_list_cmd = Command(
 
 def focus_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
     '''Focus list command execution function. Show :mit: and :tod: tagged notes.'''
+
+    os.system("clear -x")
 
     # read database and send notes to console
     notes: list[db.Note] = db.get_tag_matches('mit')
@@ -331,7 +338,7 @@ def decide_cmd_execute(_: tuple[str, ...] = ()) -> None:
     return
 
 decide_cmd = Command(
-    ('decide',),
+    ('decide', '...'),
     decide_cmd_execute
 )
 
