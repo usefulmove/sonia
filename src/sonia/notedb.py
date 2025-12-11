@@ -66,6 +66,8 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     # connect to database (or create if it doesn't exist)
     con = duckdb.connect(Path(db_path).expanduser())
 
+    con.begin() # start transaction
+
     # create schema and notes table
     con.execute(f'create schema if not exists {SCHEMA};')
     con.execute(f'set schema = {SCHEMA};')
@@ -77,6 +79,8 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             {MESSAGE_COLUMN} varchar
         );
     """)
+
+    con.commit() # end transaction
 
     return con
 
