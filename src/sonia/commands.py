@@ -35,10 +35,10 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
         cons.send_error('no add argument')
         return
 
-    db_notes: list[db.Note] = db.create_notes(messages)
+    conf_notes: list[db.Note] = db.create_notes(messages)
 
     # send confirmation using notes read back from database
-    for note in db_notes:
+    for note in conf_notes:
         cons.send_confirmation(note, "added")
 
 add_cmd = Command(
@@ -72,9 +72,9 @@ def short_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
     os.system("clear -x")
 
     # read database and send notes to console
-    notes: list[db.Note] = db.get_tag_unmatches('que')
+    db_notes: list[db.Note] = db.get_tag_unmatches('que')
 
-    for note in notes:
+    for note in db_notes:
         cons.send_note(note)
 
 short_list_cmd = Command(
@@ -91,10 +91,10 @@ def focus_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
     os.system("clear -x")
 
     # read database and send notes to console
-    notes: list[db.Note] = db.get_tag_matches('mit')
-    notes += db.get_tag_matches('tod')
+    db_notes: list[db.Note] = db.get_tag_matches('mit')
+    db_notes += db.get_tag_matches('tod')
 
-    for note in sorted(set(notes), key=lambda note: note.id):
+    for note in sorted(set(db_notes), key=lambda note: note.id):
         cons.send_note(note)
 
 focus_list_cmd = Command(
@@ -175,7 +175,7 @@ def update_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_confirmation(confirmation_note, "updated")
 
 update_cmd = Command(
-    ('change', 'update', 'upd', 'u', 'edit', 'e'),
+    ('update', 'upd', 'u', 'edit', 'e'),
     update_cmd_execute
 )
 
@@ -278,6 +278,55 @@ def rebase_cmd_execute(_: tuple[str, ...] = ()) -> None:
 rebase_cmd = Command(
     ('rebase', '-rebase', '--rebase'),
     rebase_cmd_execute
+)
+
+
+## change command ##############################################################
+
+def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
+    '''String replace all notes execution function.'''
+
+    ids: tuple[int, ...] = ()
+
+    # perform string replace on selected notes
+    match args:
+        case change_from, change_to:
+            # get ids for confirmation notes
+            ids: tuple[int, ...] = tuple(note.id for note in db.get_note_matches(change_from))
+
+            # update database
+            db.change_all(change_from, change_to)
+        case change_from, change_to, *nids:
+            # check nids
+            try:
+                ids = tuple(int(nid.strip()) for nid in nids)
+            except ValueError:
+                cons.send_error('invalid input')
+                return
+
+            for id in ids:
+                if not db.is_valid(id):
+                    cons.send_error('not a valid note', str(id))
+                    return
+
+            # update database
+            db.change(nids, change_from, change_to)
+        case _:
+            cons.send_error('missing arguments. sonia change "from" "to" \\[nids]')
+            return
+
+    if ids:
+        # read confirmations back for changed nids
+        conf_notes: list[db.Note] = db.get_notes(ids)
+
+        # send confirmations
+        for note in conf_notes:
+            cons.send_confirmation(note, "changed")
+
+
+change_cmd = Command(
+    ('change', 'replace'),
+    change_cmd_execute
 )
 
 
@@ -420,6 +469,7 @@ command_list = [
     delete_cmd,
     clear_cmd,
     rebase_cmd,
+    change_cmd,
     version_cmd,
     db_cmd,
     decide_cmd,

@@ -15,6 +15,8 @@ __all__ = [
     'get_tag_unmatches',
     'update_note',
     'rebase',
+    'change',
+    'change_all',
     'delete_notes',
     'clear_database',
     'set_path',
@@ -101,7 +103,7 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
             from
                 {TABLE}
             order by
-                1, 2;
+                1;
             """
 
             rows = con.execute(query).fetchall()
@@ -119,7 +121,7 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
             where
                 {NID_COLUMN} in ({query_insert})
             order by
-                1, 2;
+                1;
             """
 
             rows = con.execute(query, ids).fetchall()
@@ -172,7 +174,7 @@ def get_note_matches(match: str) -> list[Note]:
     where
         {MESSAGE_COLUMN} ilike ?
     order by
-        1, 2;
+        1;
     """
 
     with get_connection() as con:
@@ -197,7 +199,7 @@ def get_note_unmatches(unmatch: str) -> list[Note]:
     where
         {MESSAGE_COLUMN} not ilike ?
     order by
-        1, 2;
+        1;
     """
 
     with get_connection() as con:
@@ -222,7 +224,7 @@ def get_tag_matches(tag: str) -> list[Note]:
     where
         {MESSAGE_COLUMN} ilike ?
     order by
-        1, 2;
+        1;
     """
 
     with get_connection() as con:
@@ -247,7 +249,7 @@ def get_tag_unmatches(tag: str) -> list[Note]:
     where
         {MESSAGE_COLUMN} not ilike ?
     order by
-        1, 2;
+        1;
     """
 
     with get_connection() as con:
@@ -339,6 +341,38 @@ def rebase() -> None:
         con.execute(f'create or replace sequence nid_sequence start {nid_next}') # reset sequence
 
         con.commit()
+
+
+def change(ids: list[int], change_from: str, change_to: str) -> None:
+    '''Perform string replace operation on selected notes.'''
+
+    query_insert: str = ', '.join('?' for _ in ids)
+
+    query = f"""
+    update
+        {TABLE}
+    set
+        {MESSAGE_COLUMN} = replace({MESSAGE_COLUMN}, '{change_from}', '{change_to}')
+    where
+        {NID_COLUMN} in ({query_insert});
+    """
+
+    with get_connection() as con:
+        con.execute(query, ids)
+
+
+def change_all(change_from: str, change_to: str) -> None:
+    '''Perform string replace operation on all notes.'''
+
+    query = f"""
+    update
+        {TABLE}
+    set
+        {MESSAGE_COLUMN} = replace({MESSAGE_COLUMN}, '{change_from}', '{change_to}');
+    """
+
+    with get_connection() as con:
+        con.execute(query)
 
 
 def is_valid(id: int) -> bool:
