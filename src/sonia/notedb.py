@@ -7,49 +7,52 @@ import duckdb
 
 
 __all__ = [
-    'Note',
-    'create_notes',
-    'is_valid',
-    'get_notes',
-    'get_note_matches',
-    'get_note_unmatches',
-    'get_tag_matches',
-    'get_tag_unmatches',
-    'update_note',
-    'rebase',
-    'change',
-    'change_all',
-    'delete_notes',
-    'clear_database',
-    'set_path',
+    "Note",
+    "create_notes",
+    "is_valid",
+    "get_notes",
+    "get_note_matches",
+    "get_note_unmatches",
+    "get_tag_matches",
+    "get_tag_unmatches",
+    "update_note",
+    "rebase",
+    "change",
+    "change_all",
+    "delete_notes",
+    "clear_database",
+    "set_path",
 ]
 
 
 class Note(NamedTuple):
-    '''note interface objects'''
+    """note interface objects"""
+
     id: int
     date: datetime
     message: str
 
     def __repr__(self) -> str:
-        return f'Note({self.id!r}, {self.date!r}, {self.message!r})'
+        return f"Note({self.id!r}, {self.date!r}, {self.message!r})"
 
 
 class DatabaseCorrupted(Exception):
-    '''Database corrupted exception'''
+    """Database corrupted exception"""
+
     pass
 
 
 ## database schema ##
-SCHEMA = 'coredb'
-TABLE = 'notes'
-NID_COLUMN = 'nid'
-TIMESTAMP_COLUMN = 'date'
-MESSAGE_COLUMN = 'message'
+SCHEMA = "coredb"
+TABLE = "notes"
+NID_COLUMN = "nid"
+TIMESTAMP_COLUMN = "date"
+MESSAGE_COLUMN = "message"
 
 
 ## database path ##
 db_path: Path = Path.home() / ".sonia.db"
+
 
 def set_path(string_path: str) -> bool:
     global db_path
@@ -64,18 +67,19 @@ def set_path(string_path: str) -> bool:
 
 ## module functions ##
 
+
 def get_connection() -> duckdb.DuckDBPyConnection:
-    '''Return the note database connection.'''
+    """Return the note database connection."""
 
     # connect to database (or create if it doesn't exist)
     con = duckdb.connect(Path(db_path).expanduser())
 
-    con.begin() # start transaction
+    con.begin()  # start transaction
 
     # create schema and notes table
-    con.execute(f'create schema if not exists {SCHEMA};')
-    con.execute(f'set schema = {SCHEMA};')
-    con.execute('create sequence if not exists nid_sequence start 1;')
+    con.execute(f"create schema if not exists {SCHEMA};")
+    con.execute(f"set schema = {SCHEMA};")
+    con.execute("create sequence if not exists nid_sequence start 1;")
     con.execute(f"""
         create table if not exists {TABLE} (
             {NID_COLUMN} integer primary key default nextval('nid_sequence'),
@@ -84,13 +88,13 @@ def get_connection() -> duckdb.DuckDBPyConnection:
         );
     """)
 
-    con.commit() # end transaction
+    con.commit()  # end transaction
 
     return con
 
 
 def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
-    '''Return identified notes. Return all if none identified.'''
+    """Return identified notes. Return all if none identified."""
 
     rows: list[tuple[int, datetime, str]]
 
@@ -133,7 +137,7 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
 
 
 def delete_notes(ids: tuple[int, ...]) -> list[Note]:
-    '''Delete identified notes.'''
+    """Delete identified notes."""
 
     rows: list[tuple[int, datetime, str]]
 
@@ -153,17 +157,17 @@ def delete_notes(ids: tuple[int, ...]) -> list[Note]:
 
 
 def clear_database() -> None:
-    '''Delete all notes from note database.'''
+    """Delete all notes from note database."""
 
     with get_connection() as con:
         con.begin()
-        con.execute(f'delete from {TABLE};')
-        con.execute('create or replace sequence nid_sequence start 1') # reset sequence
+        con.execute(f"delete from {TABLE};")
+        con.execute("create or replace sequence nid_sequence start 1")  # reset sequence
         con.commit()
 
 
 def get_note_matches(match: str) -> list[Note]:
-    '''Return all notes that have text matching input.'''
+    """Return all notes that have text matching input."""
 
     query = f"""
     select
@@ -179,7 +183,7 @@ def get_note_matches(match: str) -> list[Note]:
     """
 
     with get_connection() as con:
-        matches = con.execute(query, ['%' + match + '%']).fetchall()
+        matches = con.execute(query, ["%" + match + "%"]).fetchall()
 
     # covert each tuple into a Note
     notes: list[Note] = [Note(*row) for row in matches]
@@ -188,7 +192,7 @@ def get_note_matches(match: str) -> list[Note]:
 
 
 def get_note_unmatches(unmatch: str) -> list[Note]:
-    '''Return all notes that do not have text matching input.'''
+    """Return all notes that do not have text matching input."""
 
     query = f"""
     select
@@ -204,7 +208,7 @@ def get_note_unmatches(unmatch: str) -> list[Note]:
     """
 
     with get_connection() as con:
-        unmatches = con.execute(query, ['%' + unmatch + '%']).fetchall()
+        unmatches = con.execute(query, ["%" + unmatch + "%"]).fetchall()
 
     # covert each tuple into a Note
     notes: list[Note] = [Note(*row) for row in unmatches]
@@ -213,7 +217,7 @@ def get_note_unmatches(unmatch: str) -> list[Note]:
 
 
 def get_tag_matches(tag: str) -> list[Note]:
-    '''Return all notes that have tags matching input.'''
+    """Return all notes that have tags matching input."""
 
     query = f"""
     select
@@ -229,7 +233,7 @@ def get_tag_matches(tag: str) -> list[Note]:
     """
 
     with get_connection() as con:
-        matches = con.execute(query, ['%:' + tag + ':%']).fetchall()
+        matches = con.execute(query, ["%:" + tag + ":%"]).fetchall()
 
     # covert each tuple into a Note
     notes: list[Note] = [Note(*row) for row in matches]
@@ -238,7 +242,7 @@ def get_tag_matches(tag: str) -> list[Note]:
 
 
 def get_tag_unmatches(tag: str) -> list[Note]:
-    '''Return all notes that do not have tags matching input.'''
+    """Return all notes that do not have tags matching input."""
 
     query = f"""
     select
@@ -254,7 +258,7 @@ def get_tag_unmatches(tag: str) -> list[Note]:
     """
 
     with get_connection() as con:
-        unmatches = con.execute(query, ['%:' + tag + ':%']).fetchall()
+        unmatches = con.execute(query, ["%:" + tag + ":%"]).fetchall()
 
     # covert each tuple into a Note
     notes: list[Note] = [Note(*row) for row in unmatches]
@@ -263,7 +267,7 @@ def get_tag_unmatches(tag: str) -> list[Note]:
 
 
 def update_note(id: int, message: str) -> None:
-    '''Replace note text of identified note with provided input.'''
+    """Replace note text of identified note with provided input."""
 
     query = f"""
     update
@@ -279,7 +283,7 @@ def update_note(id: int, message: str) -> None:
 
 
 def create_notes(entries: tuple[str, ...]) -> list[Note]:
-    '''Add notes to database using note text inputs.'''
+    """Add notes to database using note text inputs."""
 
     rows: list[tuple[int, datetime, str]] = []
 
@@ -303,7 +307,7 @@ def create_notes(entries: tuple[str, ...]) -> list[Note]:
 
 
 def rebase() -> None:
-    '''Rebase note identifiers starting at 1.'''
+    """Rebase note identifiers starting at 1."""
 
     query = f"""
     with n{NID_COLUMN} as (
@@ -330,22 +334,26 @@ def rebase() -> None:
     with get_connection() as con:
         con.begin()
 
-        con.execute(query) # rebase nids
+        con.execute(query)  # rebase nids
 
         # retrieve next nid in sequence
-        resp = con.execute(f'select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}').fetchone()
+        resp = con.execute(
+            f"select coalesce(max({NID_COLUMN}), 0) + 1 from {TABLE}"
+        ).fetchone()
         if resp is None:
             # should never happen due do COALESCE, but required by type checker
             raise DatabaseCorrupted("Failed to retrieve max NID from database")
         nid_next = resp[0]
 
-        con.execute(f'create or replace sequence nid_sequence start {nid_next}') # reset sequence
+        con.execute(
+            f"create or replace sequence nid_sequence start {nid_next}"
+        )  # reset sequence
 
         con.commit()
 
 
 def change(ids: tuple[int, ...], change_from: str, change_to: str) -> None:
-    '''Perform string replace operation on selected notes.'''
+    """Perform string replace operation on selected notes."""
 
     query = f"""
     update
@@ -361,7 +369,7 @@ def change(ids: tuple[int, ...], change_from: str, change_to: str) -> None:
 
 
 def change_all(change_from: str, change_to: str) -> None:
-    '''Perform string replace operation on all notes.'''
+    """Perform string replace operation on all notes."""
 
     query = f"""
     update
@@ -375,7 +383,7 @@ def change_all(change_from: str, change_to: str) -> None:
 
 
 def is_valid(id: int) -> bool:
-    '''Return whether argument is a valid note identifier.'''
+    """Return whether argument is a valid note identifier."""
 
     query = f"""
     select
@@ -393,5 +401,5 @@ def is_valid(id: int) -> bool:
 
 
 def generate_query_insert(elems: Iterable) -> str:
-    '''Generate parameterized query insert.'''
-    return ', '.join('?' for _ in elems)
+    """Generate parameterized query insert."""
+    return ", ".join("?" for _ in elems)

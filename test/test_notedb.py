@@ -96,7 +96,14 @@ def test_change() -> None:
 
     db.create_notes(entries)
 
-    db.change((1, 3,), "test_", "done_")
+    db.change(
+        (
+            1,
+            3,
+        ),
+        "test_",
+        "done_",
+    )
     db.change_all("_", ":")
 
     db_notes = db.get_notes()
