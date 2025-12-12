@@ -158,7 +158,10 @@ def clear_database() -> None:
     '''Delete all notes from note database.'''
 
     with get_connection() as con:
+        con.begin()
         con.execute(f'delete from {TABLE};')
+        con.execute('create or replace sequence nid_sequence start 1') # reset sequence
+        con.commit()
 
 
 def get_note_matches(match: str) -> list[Note]:
