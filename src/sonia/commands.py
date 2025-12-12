@@ -42,7 +42,7 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
         cons.send_confirmation(note, "added")
 
 add_cmd = Command(
-    ('add',  'a'),
+    ('add',  'a', 'capture'),
     add_cmd_execute
 )
 
@@ -292,7 +292,7 @@ def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
     match args:
         case change_from, change_to:
             # get ids for confirmation notes
-            ids: tuple[int, ...] = tuple(note.id for note in db.get_note_matches(change_from))
+            ids = tuple(note.id for note in db.get_note_matches(change_from))
 
             # update database
             db.change_all(change_from, change_to)
@@ -310,7 +310,7 @@ def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
                     return
 
             # update database
-            db.change(nids, change_from, change_to)
+            db.change(ids, change_from, change_to)
         case _:
             cons.send_error('missing arguments. sonia change "from" "to" \\[nids]')
             return

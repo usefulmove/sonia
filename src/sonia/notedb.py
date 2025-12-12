@@ -343,7 +343,7 @@ def rebase() -> None:
         con.commit()
 
 
-def change(ids: list[int], change_from: str, change_to: str) -> None:
+def change(ids: tuple[int, ...], change_from: str, change_to: str) -> None:
     '''Perform string replace operation on selected notes.'''
 
     query_insert: str = ', '.join('?' for _ in ids)
