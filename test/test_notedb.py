@@ -86,6 +86,25 @@ def test_rebase() -> None:
     assert db.get_notes()[0].id == 1
 
 
+def test_change() -> None:
+    assert db.set_path(test_path)
+
+    db.clear_database()
+    db.rebase()
+
+    db_notes = db.get_notes()
+
+    db.create_notes(entries)
+
+    db.change((1, 3,), "test_", "done_")
+    db.change_all("_", ":")
+
+    db_notes = db.get_notes()
+
+    assert db_notes[0].message == "done:one"
+    assert db_notes[1].message == "test:two"
+
+
 def test_clear_database() -> None:
     db.clear_database()
 
