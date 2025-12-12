@@ -1,7 +1,9 @@
-from pathlib import Path
+from collections.abc import Iterable
 from datetime import datetime
-import duckdb
+from pathlib import Path
 from typing import NamedTuple
+
+import duckdb
 
 
 __all__ = [
@@ -108,8 +110,6 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
 
             rows = con.execute(query).fetchall()
         else:
-            query_insert: str = ', '.join('?' for _ in ids)
-
             # retrieve selected nids
             query = f"""
             select
@@ -119,7 +119,7 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
             from
                 {TABLE}
             where
-                {NID_COLUMN} in ({query_insert})
+                {NID_COLUMN} in ({generate_query_insert(ids)})
             order by
                 1;
             """
@@ -137,11 +137,9 @@ def delete_notes(ids: tuple[int, ...]) -> list[Note]:
 
     rows: list[tuple[int, datetime, str]]
 
-    query_insert: str = ', '.join('?' for _ in ids)
-
     query = f"""
     delete from {TABLE}
-    where {NID_COLUMN} in ({query_insert})
+    where {NID_COLUMN} in ({generate_query_insert(ids)})
     returning *;
     """
 
@@ -349,15 +347,13 @@ def rebase() -> None:
 def change(ids: tuple[int, ...], change_from: str, change_to: str) -> None:
     '''Perform string replace operation on selected notes.'''
 
-    query_insert: str = ', '.join('?' for _ in ids)
-
     query = f"""
     update
         {TABLE}
     set
         {MESSAGE_COLUMN} = replace({MESSAGE_COLUMN}, '{change_from}', '{change_to}')
     where
-        {NID_COLUMN} in ({query_insert});
+        {NID_COLUMN} in ({generate_query_insert(ids)});
     """
 
     with get_connection() as con:
@@ -394,3 +390,8 @@ def is_valid(id: int) -> bool:
         count, *_ = con.execute(query, [id]).fetchall()[0]
 
     return count > 0
+
+
+def generate_query_insert(elems: Iterable) -> str:
+    '''Generate parameterized query insert.'''
+    return ', '.join('?' for _ in elems)
