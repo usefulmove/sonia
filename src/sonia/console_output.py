@@ -51,7 +51,7 @@ def send_note(note: db.Note) -> None:
 
 
 def send_notes(notes: tuple[db.Note, ...], reverse: bool = False) -> None:
-    for note in (notes[::-1] if reverse else notes):
+    for note in notes[::-1] if reverse else notes:
         send_note(note)
 
 
