@@ -6,8 +6,7 @@ import pytest
 from sonia import commands as cmd
 
 
-test_folder = Path(__file__).parent
-test_path = str(test_folder / "commands_test.db")
+test_path = str(Path(__file__).with_name("commands_test.db"))
 
 
 entries: tuple[str, ...] = ("test_one", "test_two", "test_three")

@@ -6,8 +6,7 @@ import pytest
 from sonia import notedb as db
 
 
-test_folder = Path(__file__).parent
-test_path = str(test_folder / "notedb_test.db")
+test_path = str(Path(__file__).with_name("notedb_test.db"))
 
 
 entries: tuple[str, ...] = ("test_one", "test_two", "test_three")
@@ -18,7 +17,7 @@ def test_set_path() -> None:
 
 
 def test_create_notes() -> None:
-    confirmation_notes: list[db.Note] = db.create_notes(entries)
+    confirmation_notes = db.create_notes(entries)
 
     assert len(confirmation_notes) == len(entries)
 
@@ -29,17 +28,17 @@ def test_is_valid() -> None:
 
 
 def test_get_notes() -> None:
-    notes: list[db.Note] = db.get_notes()
+    notes = db.get_notes()
     assert len(notes) == len(entries)
 
 
 def test_get_note_matches() -> None:
-    notes: list[db.Note] = db.get_note_matches("test")
+    notes = db.get_note_matches("test")
     assert len(notes) == len(entries)
 
 
 def test_get_note_unmatches() -> None:
-    notes: list[db.Note] = db.get_note_unmatches("one")
+    notes = db.get_note_unmatches("one")
     assert len(notes) == 2
 
 
@@ -48,7 +47,7 @@ def test_update_and_read_note() -> None:
 
     db.update_note(1, update_message)
 
-    notes: list[db.Note] = db.get_tag_matches("tag")
+    notes = db.get_tag_matches("tag")
 
     assert len(notes) == 1
     assert notes[0].message == update_message
@@ -67,14 +66,14 @@ def test_get_tag_matches_unmatches() -> None:
 def test_delete_notes() -> None:
     nids: tuple[int, int] = (1, 3)
 
-    deleted_notes: list[db.Note] = db.delete_notes(nids)
+    deleted_notes = db.delete_notes(nids)
 
     returned_nids = tuple(note.id for note in deleted_notes)
 
     assert nids == returned_nids
 
-    notes_a: list[db.Note] = db.get_notes()
-    notes_b: list[db.Note] = db.get_notes((2,))
+    notes_a = db.get_notes()
+    notes_b = db.get_notes((2,))
 
     assert notes_a == notes_b
     assert len(notes_a) == 1
