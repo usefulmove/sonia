@@ -1,5 +1,6 @@
 # AGENTS.md - Guide for Agentic Coding Agents
 
+
 ## Build/Lint/Test Commands
 
 - Run all tests: `pytest test/`
@@ -9,6 +10,7 @@
 - Lint fix: `ruff check --fix`
 - Format check: `ruff format --check`
 - Format code: `ruff format`
+
 
 ## Code Style Guidelines
 
@@ -55,3 +57,7 @@
 - Write tests in `test/` directory
 - Use descriptive test function names
 - Test one behavior per test function
+
+
+## Communication
+In all interactions, be extremely concise and sacrifice grammar for the sake of concision!!
