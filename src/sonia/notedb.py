@@ -93,7 +93,7 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     return con
 
 
-def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
+def get_notes(ids: tuple[int, ...] = ()) -> tuple[Note, ...]:
     """Return identified notes. Return all if none identified."""
 
     rows: list[tuple[int, datetime, str]]
@@ -130,13 +130,13 @@ def get_notes(ids: tuple[int, ...] = ()) -> list[Note]:
 
             rows = con.execute(query, ids).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in rows]
+    # covert each row into a Note
+    notes = tuple(Note(*row) for row in rows)
 
     return notes
 
 
-def delete_notes(ids: tuple[int, ...]) -> list[Note]:
+def delete_notes(ids: tuple[int, ...]) -> tuple[Note, ...]:
     """Delete identified notes."""
 
     rows: list[tuple[int, datetime, str]]
@@ -150,8 +150,8 @@ def delete_notes(ids: tuple[int, ...]) -> list[Note]:
     with get_connection() as con:
         rows = con.execute(query, ids).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in rows]
+    # covert each row into a Note
+    notes = tuple(Note(*row) for row in rows)
 
     return notes
 
@@ -166,7 +166,7 @@ def clear_database() -> None:
         con.commit()
 
 
-def get_note_matches(match: str) -> list[Note]:
+def get_note_matches(match: str) -> tuple[Note, ...]:
     """Return all notes that have text matching input."""
 
     query = f"""
@@ -185,13 +185,13 @@ def get_note_matches(match: str) -> list[Note]:
     with get_connection() as con:
         matches = con.execute(query, ["%" + match + "%"]).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in matches]
+    # covert each match row into a Note
+    notes = tuple(Note(*row) for row in matches)
 
     return notes
 
 
-def get_note_unmatches(unmatch: str) -> list[Note]:
+def get_note_unmatches(unmatch: str) -> tuple[Note, ...]:
     """Return all notes that do not have text matching input."""
 
     query = f"""
@@ -210,13 +210,13 @@ def get_note_unmatches(unmatch: str) -> list[Note]:
     with get_connection() as con:
         unmatches = con.execute(query, ["%" + unmatch + "%"]).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in unmatches]
+    # covert each unmatch row into a Note
+    notes = tuple(Note(*row) for row in unmatches)
 
     return notes
 
 
-def get_tag_matches(tag: str) -> list[Note]:
+def get_tag_matches(tag: str) -> tuple[Note, ...]:
     """Return all notes that have tags matching input."""
 
     query = f"""
@@ -235,13 +235,13 @@ def get_tag_matches(tag: str) -> list[Note]:
     with get_connection() as con:
         matches = con.execute(query, ["%:" + tag + ":%"]).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in matches]
+    # covert each match row into a Note
+    notes = tuple(Note(*row) for row in matches)
 
     return notes
 
 
-def get_tag_unmatches(tag: str) -> list[Note]:
+def get_tag_unmatches(tag: str) -> tuple[Note, ...]:
     """Return all notes that do not have tags matching input."""
 
     query = f"""
@@ -260,8 +260,8 @@ def get_tag_unmatches(tag: str) -> list[Note]:
     with get_connection() as con:
         unmatches = con.execute(query, ["%:" + tag + ":%"]).fetchall()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in unmatches]
+    # covert each unmatch row into a Note
+    notes = tuple(Note(*row) for row in unmatches)
 
     return notes
 
@@ -282,7 +282,7 @@ def update_note(id: int, message: str) -> None:
         con.execute(query, [message, id])
 
 
-def create_notes(entries: tuple[str, ...]) -> list[Note]:
+def create_notes(entries: tuple[str, ...]) -> tuple[Note, ...]:
     """Add notes to database using note text inputs."""
 
     rows: list[tuple[int, datetime, str]] = []
@@ -300,8 +300,8 @@ def create_notes(entries: tuple[str, ...]) -> list[Note]:
             rows += con.execute(query, [message]).fetchall()
         con.commit()
 
-    # covert each tuple into a Note
-    notes: list[Note] = [Note(*row) for row in rows]
+    # covert each row into a Note
+    notes = tuple(Note(*row) for row in rows)
 
     return notes
 

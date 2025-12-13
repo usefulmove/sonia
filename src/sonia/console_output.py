@@ -1,7 +1,9 @@
 import sys
 import re
 from time import sleep, time
+
 from rich.console import Console
+
 from sonia import notedb as db
 
 
@@ -46,6 +48,11 @@ def send_note(note: db.Note) -> None:
     )
 
     sleep(0.016)
+
+
+def send_notes(notes: tuple[db.Note, ...], reverse: bool = False) -> None:
+    for note in (notes[::-1] if reverse else notes):
+        send_note(note)
 
 
 def send_confirmation(note: db.Note, action: str) -> None:

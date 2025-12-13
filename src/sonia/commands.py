@@ -39,7 +39,7 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
         cons.send_error("no add argument")
         return
 
-    conf_notes: list[db.Note] = db.create_notes(messages)
+    conf_notes = db.create_notes(messages)
 
     # send confirmation using notes read back from database
     for note in conf_notes:
@@ -57,9 +57,8 @@ def list_cmd_execute(_: tuple[str, ...] = ()) -> None:
 
     os.system("clear -x")
 
-    # read database contents and write out to console
-    for note in db.get_notes():
-        cons.send_note(note)
+    # read database notes and send to console
+    cons.send_notes(db.get_notes(), reverse=True)
 
 
 list_cmd = Command(("list", "ls", "long", "all"), list_cmd_execute)
@@ -73,11 +72,8 @@ def short_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
 
     os.system("clear -x")
 
-    # read database and send notes to console
-    db_notes: list[db.Note] = db.get_tag_unmatches("que")
-
-    for note in db_notes:
-        cons.send_note(note)
+    # read database notes and send to console
+    cons.send_notes(db.get_tag_unmatches("que"), reverse=True)
 
 
 short_list_cmd = Command(
@@ -94,12 +90,15 @@ def focus_list_cmd_execute(_: tuple[str, ...] = ()) -> None:
 
     os.system("clear -x")
 
-    # read database and send notes to console
-    db_notes: list[db.Note] = db.get_tag_matches("mit")
+    # read database notes
+    db_notes = db.get_tag_matches("mit")
     db_notes += db.get_tag_matches("tod")
 
-    for note in sorted(set(db_notes), key=lambda note: note.id):
-        cons.send_note(note)
+    # condition notes - remove duplicates and re-sort
+    conditioned_db_notes = tuple(sorted(set(db_notes), key=lambda note: note.id))
+
+    # send to console
+    cons.send_notes(conditioned_db_notes, reverse=True)
 
 
 focus_list_cmd = Command(("focusls", "focus", "flist", "fls"), focus_list_cmd_execute)
@@ -117,8 +116,8 @@ def search_cmd_execute(args: tuple[str, ...]) -> None:
 
     match: str = args[0]
 
-    for note in db.get_note_matches(match):
-        cons.send_note(note)
+    # read database notes and send to console
+    cons.send_notes(db.get_note_matches(match), reverse=True)
 
 
 search_cmd = Command(("search", "s", "find", "f", "fd", "filter"), search_cmd_execute)
@@ -136,8 +135,8 @@ def tag_cmd_execute(args: tuple[str, ...]) -> None:
 
     tag: str = args[0].strip(":")
 
-    for note in db.get_tag_matches(tag):
-        cons.send_note(note)
+    # read database notes and send to console
+    cons.send_notes(db.get_tag_matches(tag), reverse=True)
 
 
 tag_cmd = Command(("tag", "t"), tag_cmd_execute)
@@ -242,7 +241,7 @@ def delete_cmd_execute(nids: tuple[str, ...]) -> None:
             return
 
     # delete notes and retrieve confirmation
-    conf_notes: list[db.Note] = db.delete_notes(ids)
+    conf_notes = db.delete_notes(ids)
 
     for note in conf_notes:
         cons.send_confirmation(note, "removed")
@@ -318,7 +317,7 @@ def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
 
     if ids:
         # read confirmations back for changed nids
-        conf_notes: list[db.Note] = db.get_notes(ids)
+        conf_notes: tuple[db.Note, ...] = db.get_notes(ids)
 
         # send confirmations
         for note in conf_notes:
