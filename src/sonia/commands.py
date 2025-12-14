@@ -47,7 +47,7 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
         cons.send_confirmation(note, "added")
 
 
-add_cmd = Command(("add", "a", "capture"), add_cmd_execute)
+add_cmd = Command(("add", "a", "capture", "cap"), add_cmd_execute)
 
 
 ## list all notes command ##########################################################
