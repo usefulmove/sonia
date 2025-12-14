@@ -2,6 +2,7 @@ import os
 from importlib import metadata
 from collections.abc import Callable
 from random import randrange
+
 from sonia import notedb as db
 from sonia import console_output as cons
 
@@ -215,6 +216,45 @@ def append_cmd_execute(args: tuple[str, ...]) -> None:
 
 
 append_cmd = Command(("append", "app"), append_cmd_execute)
+
+
+## reset command ###############################################################
+
+
+def reset_cmd_execute(args: tuple[str, ...]) -> None:
+    """Reset note command execution function. Reset timestamp and note ID (nid)."""
+
+    if len(args) < 1:
+        cons.send_error("no note argument", "nid")
+        return
+
+    reset_note_id: str = args[0]
+
+    # valid note id?
+    try:
+        id: int = int(reset_note_id.strip())
+    except ValueError:
+        cons.send_error("invalid input", reset_note_id)
+        return
+
+    if not db.is_valid(id):
+        cons.send_error("not a valid note", str(id))
+        return
+
+    # retrieve original note
+    original_note, *_ = db.get_notes((id,))
+
+    # remove original
+    _ = db.delete_notes((id,))
+
+    # add new note with original message
+    confirmation_note, *_ = db.create_notes((original_note.message,))
+
+    # send confirmation
+    cons.send_confirmation(confirmation_note, "reset")
+
+
+reset_cmd = Command(("reset",), reset_cmd_execute)
 
 
 ## delete command ##############################################################
@@ -451,6 +491,7 @@ command_list = [
     search_cmd,
     update_cmd,
     append_cmd,
+    reset_cmd,
     tag_cmd,
     delete_cmd,
     clear_cmd,
