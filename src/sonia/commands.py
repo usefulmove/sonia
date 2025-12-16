@@ -254,7 +254,7 @@ def reset_cmd_execute(args: tuple[str, ...]) -> None:
     cons.send_confirmation(confirmation_note, "reset")
 
 
-reset_cmd = Command(("reset", "refresh"), reset_cmd_execute)
+reset_cmd = Command(("reset", "refresh", "touch"), reset_cmd_execute)
 
 
 ## delete command ##############################################################
@@ -302,7 +302,7 @@ def clear_cmd_execute(_: tuple[str, ...] = ()) -> None:
 
 
 clear_cmd = Command(
-    ("-clear", "--clear", "-reset", "--reset", "-remove-all", "--remove-all"),
+    ("-clear", "--clear", "-remove-all", "--remove-all"),
     clear_cmd_execute,
 )
 
