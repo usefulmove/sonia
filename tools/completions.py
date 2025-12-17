@@ -32,8 +32,8 @@ def get_suggestions(stub: str) -> tuple[str, ...]:
 
 
 if __name__ == "__main__":
-    # get the current word (stub) from the shell and use to give a suggestion
-
+    # Get the current word (stub) from the shell and use to give suggestions
+    #
     # When you type sonia sub<TAB>:
     # 1.  Script: sonia_completions.py (The logic provider)
     # 2.  Command ($1 / argv[1]): sonia (The context/namespace)
@@ -41,8 +41,5 @@ if __name__ == "__main__":
 
     stub = sys.argv[2]
 
-    suggestions: tuple[str, ...] = get_suggestions(stub)
-
-    match suggestions:
-        case [suggestion]:
-            print(suggestion)
+    # bash expects newline-separated completions sent to standard output (stdout)
+    print("\n".join(get_suggestions(stub)))
