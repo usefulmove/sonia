@@ -37,7 +37,7 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
     """Add notes command execution function."""
 
     if len(messages) < 1:
-        cons.send_error("no add argument")
+        cons.send_error("no capture argument", "sonia capture \"message one\" \"message two\" ...")
         return
 
     conf_notes = db.create_notes(messages)
@@ -112,7 +112,7 @@ def search_cmd_execute(args: tuple[str, ...]) -> None:
     """Search notes command execution function. Show notes that match search term."""
 
     if len(args) < 1:
-        cons.send_error("no search argument")
+        cons.send_error("no search argument", "sonia search search_term")
         return
 
     match: str = args[0]
@@ -131,7 +131,7 @@ def tag_cmd_execute(args: tuple[str, ...]) -> None:
     """Search tag command execution function. Show notes that contain provided tag."""
 
     if len(args) < 1:
-        cons.send_error("no search argument", "tag")
+        cons.send_error("no tag search argument", "sonia tag tag_name")
         return
 
     tag: str = args[0].strip(":")
@@ -150,7 +150,7 @@ def update_cmd_execute(args: tuple[str, ...]) -> None:
     """Update note command execution function. Change note at provided note ID (nid)."""
 
     if len(args) < 2:
-        cons.send_error("not enough update arguments", "nid message")
+        cons.send_error("not enough update arguments", "sonia update nid replacement_message")
         return
 
     upd_note_id: str = args[0]
@@ -186,7 +186,7 @@ def append_cmd_execute(args: tuple[str, ...]) -> None:
     """Append note command execution function. Append text to provided note ID (nid)."""
 
     if len(args) < 2:
-        cons.send_error("not enough append arguments", "nid extension")
+        cons.send_error("not enough append arguments", "sonia append nid text_to_append")
         return
 
     app_note_id: str = args[0]
@@ -225,7 +225,7 @@ def reset_cmd_execute(args: tuple[str, ...]) -> None:
     """Reset note command execution function. Reset timestamp and note ID (nid)."""
 
     if len(args) < 1:
-        cons.send_error("no note argument", "nid")
+        cons.send_error("no note identifier provided", "sonia reset nid")
         return
 
     reset_note_id: str = args[0]
@@ -265,7 +265,7 @@ def delete_cmd_execute(nids: tuple[str, ...]) -> None:
     """Delete note command execution function. Delete provided note IDs (nids)."""
 
     if len(nids) < 1:
-        cons.send_error("no delete argument", "nid")
+        cons.send_error("no argument", "sonia done nid_one nid_two ...")
         return
 
     # check nids
@@ -352,7 +352,7 @@ def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
             # update database
             db.change(ids, change_from, change_to)
         case _:
-            cons.send_error('missing arguments. sonia change "from" "to" \\[nids]')
+            cons.send_error("missing argument(s)", "sonia change from_text to_text \\[nid_one nid_two ...]")
             return
 
     if ids:
@@ -387,7 +387,7 @@ def db_cmd_execute(args: tuple[str, ...]) -> None:
     """Use specified database command execution function."""
 
     if len(args) < 1:
-        cons.send_error("no database argument")
+        cons.send_error("no database argument", "sonia db path/to/database command ...")
         return
 
     db_path, *rest = args
