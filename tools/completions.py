@@ -20,6 +20,8 @@ SUBCOMMANDS_AND_OPTIONS = (
     "rm",
     "complete",
     "change",
+    "reset",
+    "touch",
     "version",
     "db",
     "decide",
