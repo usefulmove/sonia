@@ -37,7 +37,9 @@ def add_cmd_execute(messages: tuple[str, ...]) -> None:
     """Add notes command execution function."""
 
     if len(messages) < 1:
-        cons.send_error("no capture argument", "sonia capture \"message one\" \"message two\" ...")
+        cons.send_error(
+            "no capture argument", 'sonia capture "message one" "message two" ...'
+        )
         return
 
     conf_notes = db.create_notes(messages)
@@ -150,7 +152,9 @@ def update_cmd_execute(args: tuple[str, ...]) -> None:
     """Update note command execution function. Change note at provided note ID (nid)."""
 
     if len(args) < 2:
-        cons.send_error("not enough update arguments", "sonia update nid replacement_message")
+        cons.send_error(
+            "not enough update arguments", "sonia update nid replacement_message"
+        )
         return
 
     upd_note_id: str = args[0]
@@ -186,7 +190,9 @@ def append_cmd_execute(args: tuple[str, ...]) -> None:
     """Append note command execution function. Append text to provided note ID (nid)."""
 
     if len(args) < 2:
-        cons.send_error("not enough append arguments", "sonia append nid text_to_append")
+        cons.send_error(
+            "not enough append arguments", "sonia append nid text_to_append"
+        )
         return
 
     app_note_id: str = args[0]
@@ -352,7 +358,10 @@ def change_cmd_execute(args: tuple[str, ...] = ()) -> None:
             # update database
             db.change(ids, change_from, change_to)
         case _:
-            cons.send_error("missing argument(s)", "sonia change from_text to_text \\[nid_one nid_two ...]")
+            cons.send_error(
+                "missing argument(s)",
+                "sonia change from_text to_text \\[nid_one nid_two ...]",
+            )
             return
 
     if ids:

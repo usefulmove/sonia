@@ -30,22 +30,22 @@ uv tool install .
 
 ### Option 2: For Developers
 
-If you want to contribute or modify the source code, this project uses `uv` for dependency management.
+If you want to contribute or modify the source code, this project uses `uv` for dependency management and specialized [Anthropic Skills](https://github.com/anthropics/skills) for development.
 
 1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/usefulmove/sonia.git
-    cd sonia
-    ```
-
-2.  **Install dependencies:**
-
+...
     ```bash
     uv sync
     ```
 
-3.  **Run locally:**
+3.  **Run quality checks:**
+
+    ```bash
+    ./skills/tester/scripts/check.sh
+    ```
+
+4.  **Run locally:**
+
 
     ```bash
     python -m sonia list

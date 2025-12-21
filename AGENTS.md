@@ -3,13 +3,21 @@
 
 ## Build/Lint/Test Commands
 
+- **Unified Check (Preferred)**: `./skills/tester/scripts/check.sh`
 - Run all tests: `pytest test/`
 - Run single test: `pytest test/test_notedb.py::test_create_notes`
 - Run tests with output: `pytest -s`
+- Type checking: `uv run ty check`
 - Lint check: `ruff check`
 - Lint fix: `ruff check --fix`
 - Format check: `ruff format --check`
 - Format code: `ruff format`
+
+
+## Skills
+
+The project uses [Anthropic Skills](https://github.com/anthropics/skills) for specialized tasks:
+- **tester**: Unified suite for testing and static analysis. See `skills/tester/SKILL.md`.
 
 
 ## Code Style Guidelines
