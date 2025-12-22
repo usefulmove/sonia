@@ -23,8 +23,9 @@ console = Console()
 
 # console colors
 CDIM = "#616161"
+CDIM2 = "#363636"
 CSEP = "#454545"
-CEMPH = "#faf6e4"
+CEMPH = "#0080ff" # "#faf6e4"
 CNORM = "default"
 CERR = "#ff0000"
 CWARN = "#fff670"
@@ -40,11 +41,11 @@ def send_note(note: db.Note) -> None:
     """Output formatted note."""
 
     console.print(
-        f"  [{CDIM}]{note.date.strftime('%y.%m.%d %H:%M')}[/]"
+        f"  [{CDIM2}]{note.date.strftime('%y.%m.%d %H:%M')}[/]"
         + f" [{CSEP}]|[/] "
         + f"[{CDIM}]{note.id}[/]"
         + f" [{CSEP}]|[/] "
-        + f"[{CNORM}]{color_tags(note.message)}[/]"
+        + f"[{CNORM}]{color_parens(color_tags(note.message))}[/]"
     )
 
     sleep(0.016)
@@ -145,3 +146,8 @@ def color_tags(s: str) -> str:
     """Apply dimming to tags in input string."""
 
     return re.sub(r":([a-zA-Z0-9]*):", f"[{CDIM}]:\\1:[/{CDIM}]", s)
+
+def color_parens(s: str) -> str:
+    """Apply dimming to text enclosed in parentheses in input string."""
+
+    return re.sub(r"\(([a-zA-Z0-9]*)\)", f"([{CEMPH}]\\1[/{CEMPH}])", s)
