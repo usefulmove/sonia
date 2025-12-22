@@ -151,4 +151,4 @@ def color_tags(s: str) -> str:
 def color_parens(s: str) -> str:
     """Apply dimming to integers enclosed in parentheses in input string."""
 
-    return re.sub(r"\(([0-9]*)\)", f"([{CEMPH}]\\1[/{CEMPH}])", s)
+    return re.sub(r"\(([0-9a-z]{,3})\)", f"([{CEMPH}]\\1[/{CEMPH}])", s)

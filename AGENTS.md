@@ -16,7 +16,7 @@
 
 ## Skills
 
-The project uses [Anthropic Skills](https://github.com/anthropics/skills) for specialized tasks:
+The project uses [Agent Skills](https://github.com/anthropics/skills) for specialized tasks:
 - **tester**: Unified suite for testing and static analysis. See `skills/tester/SKILL.md`.
 
 
