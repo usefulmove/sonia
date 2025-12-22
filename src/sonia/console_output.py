@@ -23,9 +23,9 @@ console = Console()
 
 # console colors
 CDIM = "#616161"
-CDIM2 = "#363636"
+CDIM2 = "#393939"
 CSEP = "#454545"
-CEMPH = "#0080ff" # "#faf6e4"
+CEMPH = "#0080ff"  # "#faf6e4"
 CNORM = "default"
 CERR = "#ff0000"
 CWARN = "#fff670"
@@ -147,7 +147,8 @@ def color_tags(s: str) -> str:
 
     return re.sub(r":([a-zA-Z0-9]*):", f"[{CDIM}]:\\1:[/{CDIM}]", s)
 
-def color_parens(s: str) -> str:
-    """Apply dimming to text enclosed in parentheses in input string."""
 
-    return re.sub(r"\(([a-zA-Z0-9]*)\)", f"([{CEMPH}]\\1[/{CEMPH}])", s)
+def color_parens(s: str) -> str:
+    """Apply dimming to integers enclosed in parentheses in input string."""
+
+    return re.sub(r"\(([0-9]*)\)", f"([{CEMPH}]\\1[/{CEMPH}])", s)
