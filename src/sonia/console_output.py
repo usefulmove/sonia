@@ -43,7 +43,7 @@ def send_note(note: db.Note) -> None:
     console.print(
         f"  [{CDIM2}]{note.date.strftime('%y.%m.%d %H:%M')}[/]"
         + f" [{CSEP}]|[/] "
-        + f"[{CDIM}]{note.id}[/]"
+        + f"[{CDIM}]{note.id:>03}[/]"
         + f" [{CSEP}]|[/] "
         + f"[{CNORM}]{color_parens(color_tags(note.message))}[/]"
     )
