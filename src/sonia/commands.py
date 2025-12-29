@@ -422,6 +422,7 @@ db_cmd = Command(("db",), db_cmd_execute)
 ## decide command ##############################################################
 def decide_cmd_execute(_: tuple[str, ...] = ()) -> None:
     """Provide helpful output."""
+
     cons.send_consider_pause(6.18)
 
     choice: int = randrange(len(decisions))
